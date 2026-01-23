@@ -6,6 +6,7 @@
 #include <queue>
 #include <cmath>
 #include <string>
+#include <map>
 
 //? create a binary tree (preorder : root -> left -> right)
 class Node {
@@ -370,6 +371,7 @@ bool isSubtree(Node* root, Node* subRoot) {
 //* sum of left leaves : leetcode 404
 int sumOfLeftLeaves(Node* root) {
     
+    //? initialize sum with zero
     int sum = 0;
     if(root == NULL) return 0;
 
@@ -389,7 +391,7 @@ int sumOfLeftLeaves(Node* root) {
 
 //^ global answer for max val
 int ans = 0;
-std :: string leftnd = "frfv";
+
 //* max height of tree : leetcode 104
 int maxHeight(Node* root) {
 
@@ -425,10 +427,46 @@ int treeDiameter(Node* root) {
 //? optimized approach (0 ms)
 int treeDiameterOpt(Node* root) {
 
-    //^ clling height function
+    //^ calling height function
     maxHeight(root);
 
     return ans;
+}
+
+//* top view of binary tree
+void topView(Node* root) {
+
+    //& use horizontal distance concept
+    std :: map<int, int> dist; //? dist, node -> val
+
+    //^ level order traversal
+    std :: queue<std :: pair<Node*, int>> q; //? node, dist
+    q.push({root, 0});
+
+    //todo push values (also write logic here)
+    while(!q.empty()) {
+
+        Node* crt = q.front().first;
+        int crtHD = q.front().second;
+        q.pop();
+
+        //^ if already exist in map
+        if(dist.find(crtHD) == dist.end()) {
+            dist[crtHD] = crt -> data;
+        }
+
+        //~ left nd right childs
+        if(crt -> left != NULL) {
+            q.push({crt -> left, crtHD-1});
+        }
+        if(crt -> right != NULL) {
+            q.push({crt -> right, crtHD+1});
+        }
+    }
+
+    for(auto val : dist) {
+        std :: cout << val.second << " ";
+    }
 }
 
 int main() {
@@ -449,7 +487,7 @@ int main() {
     // levelOrder(root);
 
     printTree(root);
-    std :: cout << "\n\n" << treeDiameterOpt(root);
+    topView(root);
 
     return 0;
 }
