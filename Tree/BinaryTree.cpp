@@ -491,19 +491,12 @@ void kthLevel(Node* root, int k) {
             }
         }
 
+        //todo print kth level elements
         if(level == k) {
             std :: cout << crt -> data << " ";
         }
     }
 
-    //todo print element of queue (kth level only)
-    while(!q.empty()) {
-
-        if(q.front().second == k) {
-            std :: cout << q.front().first << " ";
-        }
-        q.pop();
-    }
 }
 
 int main() {
