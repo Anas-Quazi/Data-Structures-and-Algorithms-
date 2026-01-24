@@ -469,6 +469,43 @@ void topView(Node* root) {
     }
 }
 
+//* kth level of binary tree
+void kthLevel(Node* root, int k) {
+
+    //^ use level order traversal
+    std :: queue<std :: pair<Node*, int>> q; 
+    q.push({root, 1});
+
+    while(!q.empty()) {
+
+        Node* crt = q.front().first;
+        int level = q.front().second;
+        q.pop();
+
+        if(level < k) {
+            if(crt -> left != NULL) {
+                q.push({crt -> left, level+1});
+            }
+            if(crt -> right != NULL) {
+                q.push({crt -> right, level+1});
+            }
+        }
+
+        if(level == k) {
+            std :: cout << crt -> data << " ";
+        }
+    }
+
+    //todo print element of queue (kth level only)
+    while(!q.empty()) {
+
+        if(q.front().second == k) {
+            std :: cout << q.front().first << " ";
+        }
+        q.pop();
+    }
+}
+
 int main() {
 
     //~ input preorder sequence
@@ -487,7 +524,7 @@ int main() {
     // levelOrder(root);
 
     printTree(root);
-    topView(root);
+    kthLevel(root, 3);
 
     return 0;
 }
