@@ -499,6 +499,23 @@ void kthLevel(Node* root, int k) {
 
 }
 
+//* lowest common ancestor : leetcode 236
+Node* commonAnces(Node* root, Node* p, Node* q) {
+
+    //^ base case(s)
+    if(root == NULL) return NULL;
+    if(root -> data == p -> data || root -> data == q -> data) return root;
+
+    //~ recursive calls
+    Node* leftLCA = commonAnces(root -> left, p);
+    Node* rightLCA = commonAnces(root -> right, q);
+
+    //? check nodes for finding ancestor
+    if(leftLCA && rightLCA) return root;
+    else if(leftLCA !- NULL) return leftLCA;
+    else return rightLCA;
+}
+
 int main() {
 
     //~ input preorder sequence
@@ -517,7 +534,7 @@ int main() {
     // levelOrder(root);
 
     printTree(root);
-    kthLevel(root, 3);
+    std :: cout << commonAnces(root, 3, 4);
 
     return 0;
 }
