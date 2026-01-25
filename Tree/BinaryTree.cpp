@@ -516,6 +516,40 @@ Node* commonAnces(Node* root, Node* p, Node* q) {
     else return rightLCA;
 }
 
+//* max width of binary tree
+int maxWidth(Node* root) {
+
+    //^ edge case
+    if(root == NULL) return 0;
+
+    //? queue for level order traversal and indexing
+    std :: queue<std :: pair<Node*, long long>> q;
+    q.push(root, 0);
+
+    int maxWidth = 0;
+        
+    while(!q.empty()) {
+
+        //^ start nd end index for a level
+        long long st = q.front().second;
+        long long end = q.back().second;
+
+        maxWidth = std :: max(maxWidth, (end - st) + 1);
+        
+        //todo loop for processesing all nodes at a level
+        int crtSize = q.size();
+
+        for(int i=0; i< crtSize; i++) {
+
+            Node* crt = q.front();
+            q.pop();
+
+            //~ push left nd right childs
+            if(crt.f )
+        } 
+    }
+}
+
 int main() {
 
     //~ input preorder sequence
