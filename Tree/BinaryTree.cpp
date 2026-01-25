@@ -541,13 +541,20 @@ int maxWidth(Node* root) {
 
         for(int i=0; i< crtSize; i++) {
 
-            Node* crt = q.front();
+            auto crt = q.front();
             q.pop();
 
             //~ push left nd right childs
-            if(crt.f )
+            if(crt.first -> left) {
+                q.push({crt.first -> left, crt.second*2+1})
+            }
+            if(crt.first -> right) {
+                q.push({crt.first -> right, crt.second*2+2})
+            }
         } 
     }
+
+    return maxWidth;
 }
 
 int main() {
