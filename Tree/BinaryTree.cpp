@@ -626,6 +626,23 @@ void binaryTreePaths(Node* root, std :: string path = "", std :: vector<std :: s
     }
 }
 
+//* flatten binary tree to linked list
+Node* nextRight = NULL; //? global pointer
+void flatten(Node* root) {
+
+    //^ base case
+    if(root == NULL) return;
+
+    //~ recursive calls (right -> left -> root)
+    flatten(root -> right);
+    flatten(root -> left);
+
+    root -> left = NULL;
+    root -> right = nextRight;
+    nextRight = root;
+}
+
+
 int main() {
 
     //~ input preorder sequence
