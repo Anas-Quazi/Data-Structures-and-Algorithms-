@@ -23,8 +23,9 @@ public:
     }
 };
 
+
+//* build tree using preorder sequence (with -1s)
 static int idx = -1;
-//* build tree using preorder sequence
 Node* buildTree(std :: vector<int> preSequence) {
 
     //^ increase val of index
@@ -557,6 +558,46 @@ int maxWidth(Node* root) {
     return maxWidth;
 }
 
+//* transform into sum tree
+int sumTree(Node* root) {
+
+    if(root == NULL) return 0;
+
+    //~ recursion 
+    int leftSum = sumTree(root -> left);
+    int rightSum = sumTree(root -> right);
+
+    return leftSum + rightSum + root -> data;
+}
+
+//* build tree from preorder and in order (without -1s)
+//? helper search function
+int search(std :: vector<int> in, int l, int r, int rootVal) {
+    for(int i=l; i<=r; i++) {
+        if(in[i] == rootVal) return i;
+    }
+    return -1;
+}
+
+Node* build(std :: vector<int>& pre, std :: vector<int>& in, int& preIdx, int l, int r) {
+    
+    //^ base case for NULL values
+    if(l > r) return NULL;
+
+    //^ build current root
+    Node* root = new Node(pre[preIdx]);
+
+    //? track of left nd rigth boundries with help of inorder sequence
+    int inIdx = search(in, l, r, pre[preIdx]);
+    preIdx++;
+
+    //~ just faith in recursion
+    root -> left = build(pre, in, preIdx, l, inIdx-1);
+    root -> right = build(pre, in, preIdx, inIdx+1, r);
+
+    return root;
+}
+
 int main() {
 
     //~ input preorder sequence
@@ -574,8 +615,14 @@ int main() {
     // std :: cout << "\n\n";
     // levelOrder(root);
 
-    printTree(root);
-    std :: cout << maxWidth(root);
+    std :: vector<int> inord = {9,3,15,20,7};
+    std :: vector<int> preord = {3,9,20,15,7};
+
+    int preIdx = 0;
+    Node* roooot = build(preord, inord, preIdx, 0, inord.size()-1);
+    printTree(roooot);
+
+    std :: cout << sumTree(roooot);
 
     return 0;
 }
