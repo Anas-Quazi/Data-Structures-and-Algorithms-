@@ -507,12 +507,12 @@ Node* commonAnces(Node* root, Node* p, Node* q) {
     if(root -> data == p -> data || root -> data == q -> data) return root;
 
     //~ recursive calls
-    Node* leftLCA = commonAnces(root -> left, p);
-    Node* rightLCA = commonAnces(root -> right, q);
+    Node* leftLCA = commonAnces(root -> left, p, q);
+    Node* rightLCA = commonAnces(root -> right, p, q);
 
     //? check nodes for finding ancestor
     if(leftLCA && rightLCA) return root;
-    else if(leftLCA !- NULL) return leftLCA;
+    else if(leftLCA != NULL) return leftLCA;
     else return rightLCA;
 }
 
@@ -524,9 +524,9 @@ int maxWidth(Node* root) {
 
     //? queue for level order traversal and indexing
     std :: queue<std :: pair<Node*, long long>> q;
-    q.push(root, 0);
+    q.push({root, 0});
 
-    int maxWidth = 0;
+    long long maxWidth = 0;
         
     while(!q.empty()) {
 
@@ -534,7 +534,7 @@ int maxWidth(Node* root) {
         long long st = q.front().second;
         long long end = q.back().second;
 
-        maxWidth = std :: max(maxWidth, (end - st) + 1);
+        maxWidth = std :: max(maxWidth, end-st+1);
         
         //todo loop for processesing all nodes at a level
         int crtSize = q.size();
@@ -546,10 +546,10 @@ int maxWidth(Node* root) {
 
             //~ push left nd right childs
             if(crt.first -> left) {
-                q.push({crt.first -> left, crt.second*2+1})
+                q.push({crt.first -> left, crt.second*2+1});
             }
             if(crt.first -> right) {
-                q.push({crt.first -> right, crt.second*2+2})
+                q.push({crt.first -> right, crt.second*2+2});
             }
         } 
     }
@@ -575,7 +575,7 @@ int main() {
     // levelOrder(root);
 
     printTree(root);
-    std :: cout << commonAnces(root, 3, 4);
+    std :: cout << maxWidth(root);
 
     return 0;
 }
