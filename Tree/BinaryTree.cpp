@@ -598,6 +598,34 @@ Node* build(std :: vector<int>& pre, std :: vector<int>& in, int& preIdx, int l,
     return root;
 }
 
+//* binary tree paths
+void binaryTreePaths(Node* root, std :: string path = "", std :: vector<std :: string> ans = {}) {
+    
+    //^ initialize with root val
+    if(path == "") {
+        path = std :: to_string(root->data);
+    }
+    
+    //^ base case
+    if(root->left == NULL && root->right == NULL) {
+        ans.push_back(path);
+        
+        //todo Print all paths
+        for(auto& p : ans) {
+            std :: cout << p << std :: endl;
+        }
+        return;
+    }
+    
+    //~ recursive call for right nd left subtree
+    if(root->left) {
+        binaryTreePaths(root->left, path + "->" + std :: to_string(root->left->data), ans);
+    }
+    if(root->right) {
+        binaryTreePaths(root->right, path + "->" + std :: to_string(root->right->data), ans);
+    }
+}
+
 int main() {
 
     //~ input preorder sequence
@@ -622,7 +650,7 @@ int main() {
     Node* roooot = build(preord, inord, preIdx, 0, inord.size()-1);
     printTree(roooot);
 
-    std :: cout << sumTree(roooot);
+    binaryTreePaths(roooot);
 
     return 0;
 }
