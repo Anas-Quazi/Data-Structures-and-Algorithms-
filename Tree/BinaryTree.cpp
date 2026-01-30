@@ -642,6 +642,65 @@ void flatten(Node* root) {
     nextRight = root;
 }
 
+//* has path sum : leetcode 112
+bool hasPathSum(Node* root, int target, int crtSum) {
+
+    
+    //? increase current sum by root value
+    crtSum += root -> data;
+
+    //^ base case
+    if(root -> left == NULL && root -> right == NULL) {
+        return crtSum == target;
+    }
+
+    //^ variables for left nd right subtree
+    bool leftPath = false, rightPath= false;
+
+    //~ recursssiion!
+    if(root -> left != NULL) {
+        leftPath = hasPathSum(root -> left, target, crtSum);
+    }
+    if(root -> right != NULL) {
+        rightPath = hasPathSum(root -> right, target, crtSum);
+    }
+
+    //! sum either be present in left or right subtree
+    return leftPath || rightPath;
+}
+
+//* morris inorder traversal (using iteration)
+void morrisAlgo(Node* crtRoot) {
+
+    //^ run a loop till we have NULL node
+    while(crtRoot != NULL) {
+
+        //todo check for left subtree
+        if(crtRoot -> left == NULL) {
+            std :: cout << crtRoot -> data << " ";
+            crtRoot = crtRoot -> right;
+        }
+        else {
+
+            //? inorder precedr pointer
+            Node* inPrecd = crtRoot -> left;
+            while(inPrecd -> right != NULL && inPrecd -> right != crtRoot) {
+                inPrecd = inPrecd -> right;
+            }
+
+            //& if inorder preceder has a right node (connection)
+            if(inPrecd -> right == NULL) {
+                inPrecd -> right = crtRoot; //~ create thread (connection)
+                crtRoot = crtRoot -> left; 
+            }
+            else {
+                inPrecd -> right = NULL; //~ dlete thread
+                std :: cout << crtRoot -> data << " ";
+                crtRoot = crtRoot -> right;
+            }
+        }
+    }
+}
 
 int main() {
 
@@ -667,7 +726,7 @@ int main() {
     Node* roooot = build(preord, inord, preIdx, 0, inord.size()-1);
     printTree(roooot);
 
-    binaryTreePaths(roooot);
+    morrisAlgo(roooot);
 
     return 0;
 }
