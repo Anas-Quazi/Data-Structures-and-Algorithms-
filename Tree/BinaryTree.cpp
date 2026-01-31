@@ -7,6 +7,7 @@
 #include <cmath>
 #include <string>
 #include <map>
+#include <algorithm>
 
 //? create a binary tree (preorder : root -> left -> right)
 class Node {
@@ -682,23 +683,102 @@ void morrisAlgo(Node* crtRoot) {
         }
         else {
 
-            //? inorder precedr pointer
-            Node* inPrecd = crtRoot -> left;
-            while(inPrecd -> right != NULL && inPrecd -> right != crtRoot) {
-                inPrecd = inPrecd -> right;
+            //? inorder predecessor pointer
+            Node* inPred = crtRoot -> left;
+            while(inPred -> right != NULL && inPred -> right != crtRoot) {
+                inPred = inPred -> right;
             }
 
             //& if inorder preceder has a right node (connection)
-            if(inPrecd -> right == NULL) {
-                inPrecd -> right = crtRoot; //~ create thread (connection)
+            if(inPred -> right == NULL) {
+                inPred -> right = crtRoot; //~ create thread (connection)
                 crtRoot = crtRoot -> left; 
             }
             else {
-                inPrecd -> right = NULL; //~ dlete thread
+                inPred -> right = NULL; //~ delete thread
                 std :: cout << crtRoot -> data << " ";
                 crtRoot = crtRoot -> right;
             }
         }
+    }
+}
+
+//* morkel preorder traversal (iterative)
+void morkelAlgo(Node* crtRoot) {
+
+    //^ run loop till we have NULL node
+    while(crtRoot != NULL) {
+
+        if(crtRoot -> left == NULL) {
+
+            //? print current Node data first
+            std :: cout << crtRoot -> data << " ";
+            crtRoot = crtRoot -> right;
+        }
+
+        else {
+
+            //todo find inorder predecessor
+            Node* inPred = crtRoot -> left; 
+            while(inPred -> right && inPred -> right != crtRoot) {
+                inPred = inPred -> right;
+            }
+
+            //& if IP already pointing to root (has a connection)
+            if(inPred -> right == crtRoot) {
+
+                //^ break connection nd move to right node
+                inPred -> right = NULL;
+                crtRoot = crtRoot -> right;
+            } 
+            else {
+                std :: cout << crtRoot -> data << " ";
+                inPred -> right = crtRoot; //~ create connection
+                crtRoot = crtRoot -> left;
+            }
+        }
+    }
+}
+
+//* jansen postorder traversal (iterative)
+void jansenAlgo(Node* root) {
+
+    Node* current = root;
+    std :: vector<int> ans;
+
+    while(current) {
+
+        //? is right subtree NULL 
+        if(current -> right == NULL) {
+            ans.push_back(current -> data);
+            current = current -> left;
+        }
+        else {
+
+            //^ find predecessor
+            Node* predecessor = current -> right;
+            while(predecessor -> left && predecessor -> left != current) {
+                predecessor = predecessor -> left;
+            }
+
+            //& check for connection
+            if(predecessor -> left == NULL) {
+
+                ans.push_back(current -> data);
+                predecessor -> left = current; //~ create thread
+                current = current -> right;
+            }
+            else {
+                predecessor -> left = NULL; //~ delete thread
+                current = current -> left;
+            }
+        }
+    }
+
+    std :: reverse(ans.begin(), ans.end());
+
+    for(int val : ans) {
+        std :: cout << val << " ";
     }
 }
 
@@ -726,7 +806,12 @@ int main() {
     Node* roooot = build(preord, inord, preIdx, 0, inord.size()-1);
     printTree(roooot);
 
+    std :: cout << "inorder : ";
     morrisAlgo(roooot);
+    std :: cout << "\n\npreorder : ";
+    morkelAlgo(roooot);
+    std :: cout << "\n\npostorder : ";
+    jansenAlgo(roooot);
 
     return 0;
 }
