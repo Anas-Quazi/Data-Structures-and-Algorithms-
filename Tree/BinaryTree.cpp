@@ -787,9 +787,45 @@ std :: vector<std :: vector<int>> zigzag(Node* root) {
 
     std :: vector<std :: vector<int>> ans;
 
-    ans.push_back(root);
+    //^ empty tree case
+    if(root == NULL) return ans;
 
-    
+    //? queue & level tracker
+    std :: queue<Node*> q;
+    q.push(root);
+    int level = 1;
+
+    while(!q.empty()) {
+
+        int queueSize = q.size();
+        std :: vector<int> crtLevel;
+
+        for(int i=0; i<queueSize; i++) {
+            
+            Node* crt = q.front();
+            q.pop();
+            crtLevel.push_back(crt -> data);
+
+            //~ push left nd right childs 
+            if(crt -> left) {
+                q.push(crt -> left);
+            }
+            if(crt -> right) {
+                q.push(crt -> right);
+            }
+        }
+
+        //! reverse for odd levels
+        if(level % 2 == 0) {
+            std :: reverse(crtLevel.begin(), crtLevel.end());
+        }
+
+        //^ push in main answer array
+        ans.push_back(crtLevel);
+        level++;
+    }
+ 
+    return ans;
 }
 
 int main() {
