@@ -783,6 +783,14 @@ void jansenAlgo(Node* root) {
 }
 
 //* zigzag traversal : Leetcodec 103
+std :: vector<std :: vector<int>> zigzag(Node* root) {
+
+    std :: vector<std :: vector<int>> ans;
+
+    ans.push_back(root);
+
+    
+}
 
 int main() {
 
