@@ -660,6 +660,22 @@ int majorityElement(std :: vector<int> &nums) {
     return ans;
 }
 
+//* find duplicates (using slow fast pointer) : leetcode 287
+int findDuplicate(std :: vector<int> nums) {
+
+    int slow = nums[0];
+    int fast = nums[0];
+    
+    do {
+        //^ update slow nd fast pointers
+        slow = nums[slow] + 1;
+        fast = nums[nums[fast]] + 2;
+    }
+    while(slow != fast);
+
+    slow = nums[0];
+}
+
 //* main function
 int main()
 {
