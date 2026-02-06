@@ -195,15 +195,106 @@ bool search(Node* root, int target) {
     return false;
 }
 
+//* delete Node in BST
+Node* getIS(Node* root) { // leftmost node in right subtree
+    while(root != NULL && root -> left != NULL) {
+        root = root -> left;
+    }
+    return root;
+}
+
+Node* deleteNode(Node* root, int key) {
+
+    //^ base case (if key doesn't exist in tree)
+    if(root == NULL) return NULL;
+
+    //~ search for key
+    if(key < root -> data) {
+        root -> left = deleteNode(root -> left, key);
+    }
+    else if (key > root -> data) {
+        root -> right = deleteNode(root -> right, key);
+    }
+    //? root == key
+    else {
+
+        //& case 1 : delete leaf node
+        if(root -> left == NULL && root -> right == NULL) {
+
+            //todo delete node and break connection
+            delete root;
+            return NULL;
+        }
+
+        //& case 2 : one child node
+        else if(root -> left == NULL || root -> right == NULL) {
+
+            //todo delete that node and return not-NULL (child) to parent
+            delete root;
+            return root -> left == NULL ? root -> right : root -> left;
+        }
+
+        //& case 3 : two child node
+        else {
+
+            //todo find inorder successor & repalce it with root
+            Node* IS = getIS(root -> right);
+            root -> data = IS -> data;
+            root -> right = deleteNode(root -> right, IS -> data);
+        }
+    }
+    return root;
+}
+
+//* sorted array to BST : leetocde 108
+Node* arrayTo_BST(std :: vector<int> nums, int st, int end) {
+
+    //^ base case
+    if(st > end) return NULL;
+
+    int mid = st + (end - st)/2;
+
+    //? mid element will be root of BST
+    Node* root = new Node(nums[mid]);
+
+    //~ recursive calls for left nd right subtree
+    root -> left = arrayTo_BST(nums, st, mid-1);
+    root -> right = arrayTo_BST(nums, mid+1, end);
+
+    return root;
+}
+
+//* valdate BST : leetcode 98
+bool isValidBST(Node* root, Node* min, Node* max) {
+
+    //^ base case
+    if(root == NULL) return true;
+
+    //todo compare root with min & max allowed val
+    if(min != NULL && (root -> data) <= (min -> data)) return false;
+    if(max != NULL && (root -> data) >= (max -> data)) return false;
+
+    //~ recursive call for left nd right subtree
+    return isValidBST(root -> left, min, root) && isValidBST(root -> right, root, max);
+}
+
 int main() {
 
     std :: vector<int> arr = {3, 2, 1, 5, 6, 11, 2, 4};
+    std :: vector<int> nums = {1, 2, 3, 5, 8};
     Node* root = buildTree(arr);
 
     inorder(root);
     std :: cout << "\n\n";
     printTree(root);
-    std :: cout << search(root, 6);
+    deleteNode(root, 5);
+    std :: cout << "\n\n";
+    printTree(root);
+    std :: cout << "\n\n";
+
+    Node* joeRoot = arrayTo_BST(nums, 0, nums.size()-1);
+    printTree(joeRoot);
+    std :: cout << "\n" << isValidBST(joeRoot, NULL, NULL);
 
     return 0;
 }

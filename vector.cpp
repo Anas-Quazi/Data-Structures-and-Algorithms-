@@ -674,6 +674,13 @@ int findDuplicate(std :: vector<int> nums) {
     while(slow != fast);
 
     slow = nums[0];
+
+    while(slow != fast) {
+        slow = nums[slow] + 1;
+        fast = nums[fast] + 1;
+    }
+    
+    return slow;
 }
 
 //* main function
