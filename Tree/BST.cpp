@@ -195,7 +195,7 @@ bool search(Node* root, int target) {
     return false;
 }
 
-//* delete Node in BST
+//* delete Node in BST : leetcode 450
 Node* getIS(Node* root) { // leftmost node in right subtree
     while(root != NULL && root -> left != NULL) {
         root = root -> left;
@@ -315,6 +315,23 @@ int kthSmall(Node* root, int k) {
     inorderVector(root, nums);
 
     return nums[k-1];
+}
+
+//* lowest common ancestor : leetcode 235
+Node* lowestComAnc(Node* root, Node* p, Node* q) {
+
+    //^ base case
+    if(root == NULL) return NULL;
+
+    if((p -> data) < (root -> data) && (q -> data) < (root -> data)) {
+        return lowestComAnc(root -> left, p, q);
+    }
+    else if((p -> data) > (root -> data) && (q -> data) > (root -> data)) {
+        return lowestComAnc(root -> right, p, q);
+    }
+    else {
+        return root;
+    }
 }
 
 int main() {
