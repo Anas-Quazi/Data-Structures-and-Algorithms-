@@ -278,23 +278,55 @@ bool isValidBST(Node* root, Node* min, Node* max) {
     return isValidBST(root -> left, min, root) && isValidBST(root -> right, root, max);
 }
 
+//* min distance between nodes : lettcode 783
+
+//? inorder helper function
+void inorderVector(Node* root, std :: vector<int> &nums) {
+
+    //^ base case
+    if(root == NULL) return;
+    
+    inorderVector(root -> left, nums);
+    nums.push_back(root -> data);
+    inorderVector(root -> right, nums);
+}
+
+int minDistance(Node* root) {
+
+    //^ inorder traversal for sorted sequence
+    std :: vector<int> nums;
+    inorderVector(root, nums);
+
+    int minDist = INT_MAX;
+    for(int i=1; i<nums.size(); i++) {
+        if(nums[i] - nums[i-1] < minDist) {
+            minDist = nums[i] - nums[i-1];
+        }
+    }
+
+    return minDist;
+}
+
+//* kth smallest in BST : leetcode 230
+int kthSmall(Node* root, int k) {
+
+    //^ find inorder sequence
+    std :: vector<int> nums;
+    inorderVector(root, nums);
+
+    return nums[k-1];
+}
+
 int main() {
 
     std :: vector<int> arr = {3, 2, 1, 5, 6, 11, 2, 4};
-    std :: vector<int> nums = {1, 2, 3, 5, 8};
-    Node* root = buildTree(arr);
+    std :: vector<int> nums = {42, 52, 62, 82, 88};
+    Node* root = buildTree(nums);
 
     inorder(root);
     std :: cout << "\n\n";
     printTree(root);
-    deleteNode(root, 5);
-    std :: cout << "\n\n";
-    printTree(root);
-    std :: cout << "\n\n";
-
-    Node* joeRoot = arrayTo_BST(nums, 0, nums.size()-1);
-    printTree(joeRoot);
-    std :: cout << "\n" << isValidBST(joeRoot, NULL, NULL);
+    std :: cout << "\n" << kthSmall(root, 1);
 
     return 0;
 }
