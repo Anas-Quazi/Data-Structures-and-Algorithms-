@@ -264,7 +264,7 @@ Node* arrayTo_BST(std :: vector<int> nums, int st, int end) {
     return root;
 }
 
-//* valdate BST : leetcode 98
+//* validate BST : leetcode 98
 bool isValidBST(Node* root, Node* min, Node* max) {
 
     //^ base case
@@ -278,8 +278,7 @@ bool isValidBST(Node* root, Node* min, Node* max) {
     return isValidBST(root -> left, min, root) && isValidBST(root -> right, root, max);
 }
 
-//* min distance between nodes : lettcode 783
-
+//* min distance between nodes : leetcode 783
 //? inorder helper function
 void inorderVector(Node* root, std :: vector<int> &nums) {
 
@@ -334,16 +333,71 @@ Node* lowestComAnc(Node* root, Node* p, Node* q) {
     }
 }
 
+//* constrcut BST from preorder : leetcode 1008
+Node* preOrderBST(std :: vector<int> nums, int i, int upperBound) {
+
+    //^ base case(s)
+    if(i >= nums.size() || nums[i] > upperBound) return NULL;
+
+    Node* root = new Node(nums[i]);
+    i++;
+
+    root -> left =  preOrderBST(nums, i, root -> data);
+    root -> right =  preOrderBST(nums, i, upperBound);
+
+    return root;
+}
+
+//* merge two BSTs 
+Node* mergeBST(Node* p, Node* q) {
+
+    //^ array for inorder of both trees
+    std :: vector<int> p_inorder;
+    std :: vector<int> q_inorder;
+
+    inorderVector(p, p_inorder);
+    inorderVector(q, q_inorder);
+
+    //todo merge both arrays
+    int i=0, j=0;
+    std :: vector<int> merge;
+
+    while(i < p_inorder.size() && j < q_inorder.size()) {
+        if(p_inorder[i] < q_inorder[j]) {
+            merge.push_back(p_inorder[i]);
+            i++;
+        }
+        else {
+            merge.push_back(q_inorder[j]);
+            j++;
+        }
+    }
+    while(i < p_inorder.size()) {
+        merge.push_back(p_inorder[i]);
+    }
+    while(j < q_inorder.size()) {
+        merge.push_back(q_inorder[j]);
+    }
+
+    Node* root = buildTree(merge);
+
+    return root;
+}
 int main() {
 
     std :: vector<int> arr = {3, 2, 1, 5, 6, 11, 2, 4};
     std :: vector<int> nums = {42, 52, 62, 82, 88};
     Node* root = buildTree(nums);
+    Node* root2 = buildTree(arr);
 
     inorder(root);
     std :: cout << "\n\n";
     printTree(root);
-    std :: cout << "\n" << kthSmall(root, 1);
+    std :: cout << "\n\n";
+    printTree(root2);
+    Node* joeRoot = mergeBST(root, root2);
+    std :: cout << "\n\n";
+    printTree(joeRoot);
 
     return 0;
 }
