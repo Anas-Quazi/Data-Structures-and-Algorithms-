@@ -383,6 +383,158 @@ Node* mergeBST(Node* p, Node* q) {
 
     return root;
 }
+
+//* recover tree : leetcode 99
+//? to be completed...
+Node* recoverTree(Node* root) {
+
+    std :: vector<int> sequence;
+    inorderVector(root, sequence);
+
+    int wrong1, wrong2;
+    for(int i=0; i<sequence.size(); i++) {
+        if(sequence[i] > sequence[i+1]) {
+            wrong1 = sequence[i];
+        }
+        if(sequence[i] < sequence[i-1] && sequence[i-1] != wrong1) {
+            wrong2 = sequence[i];
+        }
+    }
+    std :: swap(wrong1, wrong2);
+
+    Node* newRoot = buildTree(sequence);
+
+    return newRoot;
+}
+
+//? working algorithm
+//~ global variables and helper traversal function
+Node* prev = NULL;
+Node* first = NULL;
+Node* second = NULL;
+
+void inorderTraverse(Node* root) {
+    
+    //^ base case
+    if(root == NULL) return;
+
+    inorderTraverse(root -> left);
+
+    //todo check prev val
+    if(prev != NULL && prev -> data > root -> data) {
+        if(first == NULL) {
+            first = prev;
+        }
+        second = root;
+    }
+
+    prev = root;
+    inorderTraverse(root -> right);
+
+}
+
+void recover(Node* root) {
+
+    inorderTraverse(root);
+
+    //^ swap values of first and second
+    std :: swap(first -> data, second -> data);
+
+}
+
+//* sorted linked list to BST : leetcode 109
+//& class/ structure for node
+class LL_Node {
+public: 
+
+    int data;
+    LL_Node* next;
+
+    //^ constructor (initialize an empty list)
+    LL_Node(int val) {
+        data = val;
+        next = NULL;
+    }
+
+};
+
+//& class/ structure for List
+class SinglyLinkedList {
+    //~ head nd tail pointers
+    LL_Node* head;
+    LL_Node* tail;
+    int size = 0;
+
+public:
+
+    //^ constructor
+    SinglyLinkedList() {
+        head = tail = NULL; //~ initialize head nd tail as NULL
+    }
+
+    //? getter for head
+    LL_Node* getHead() {
+        return head;
+    }
+
+    //^ function for push front
+    void pushFront(int val) {
+        //? creating new node with help of new kw
+        LL_Node* newNode = new LL_Node(val); // dynamic
+
+        //& syntax 2 : for static object creation
+        //? Node newNode(val); // static
+
+        //todo check if LL is empty or not
+        if(head == NULL) {
+            head = tail = newNode;
+        }
+
+        else {
+            newNode -> next = head; //~ point newNode of next to head for connection
+
+            head = newNode; //~ update head pointer to newNode
+        }
+
+        std :: cout << "\nvalue : " << val << " push on front succesfully";
+        size++;
+    }
+};
+
+//^ actual function...
+//~ similar to insert
+Node* insertLL(Node* root, int val) {
+
+    //^ base case
+    if(root == NULL) {
+        return new Node(val);
+    }
+
+    //todo insert in dorted order
+    if(val < root -> data) {
+        root -> left = insertLL(root -> left, val);
+    }
+    else {
+        root -> right = insertLL(root -> right, val);
+    }
+    return root;
+}
+
+//~ similar to build tree
+Node* listToBST(LL_Node* head) {
+    
+    Node* root = NULL;
+
+    //todo traverse linked list for inserting values
+    LL_Node* tmp = head;
+    while(tmp != NULL) {
+        root = insertLL(root, tmp -> data);
+        tmp = tmp -> next;
+    }
+
+    return root;
+}
+
 int main() {
 
     std :: vector<int> arr = {3, 2, 1, 5, 6, 11, 2, 4};
