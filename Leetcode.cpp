@@ -1952,6 +1952,982 @@ public:
 }
 
 
+class DLL {
+
+    //^ flatten doubly LL : leetcode 430 (recursion)
+    D_Node* flatten(D_Node* h) {
+        if(h == NULL) return h;
+
+        D_Node* crt = h;
+
+        while(crt != NULL) {
+            if(crt -> child != NULL) {
+                //& flatten child nodes
+                D_Node* next = crt -> next;
+                crt -> next = flatten(crt -> child);
+
+                crt -> next -> prev = crt;
+                crt -> child = NULL;
+
+                //& find tail
+                while(crt != NULL) {
+                    crt = crt -> next;
+                }
+
+                //& attach tail with next ptr
+                if(next != NULL) {
+                    crt -> next = next;
+                    next -> prev = crt;
+                }
+            } 
+            crt = crt -> next;
+        }
+    }
+}; 
+
+class Queue {
+
+    //^ first unique character in string : leetcode 387
+    int firstUnique(std :: string str) {
+
+        std :: unordered_map<char, int> m;
+        std :: queue<int> que;
+
+        for(int i=0; i<str.size(); i++) {
+            
+            //? if exist
+            if(m.find(str[i]) == m.end()) {
+                que.push(i);
+            }
+        
+            //todo increase ferquency
+            m[str[i]]++;
+
+            //todo remove duplicate elements
+            while(que.size() > 0 && m[str[que.front()]] > 1) {
+                que.pop();
+            }
+
+        }
+
+        return que.empty() ? -1 : que.front();
+    }
+
+
+    //^ gas station problem : leetcode 134
+    int gasStation(std :: vector<int> &gas, std :: vector<int> &cost) {
+
+        int totalGas = std :: accumulate(gas.begin(), gas.end(), 0);
+        int totalCost = std :: accumulate(cost.begin(), cost.end(), 0);
+
+        //~ no soln exist
+        if(totalGas < totalCost) return -1;
+
+        //~ unique soln exist
+        int start = 0;
+        int crtGas = 0;
+
+        for(int i=0; i<gas.size(); i++) {
+            crtGas += (gas[i] - cost[i]);
+
+            if(crtGas < 0) {
+                start = i+1;
+                crtGas = 0;
+            }
+        }
+        
+        return start;
+    }  
+
+    //^ Sliding window maximum : leetcode 239
+    std :: vector<int> windowMax(std :: vector<int> &nums, int k) {
+
+        //? answer array
+        std :: vector<int> ans;
+
+        //? deque for comparison ans storing answer
+        std :: deque<int> dq;
+
+        //& traverse first window
+        for(int i=0; i<k; i++) {
+
+            while(dq.size() > 0 && nums[dq.back()] <= nums[i]) {
+                dq.pop_back();
+            }
+            dq.push_back(i);
+
+        }
+
+        //& traverse next window(s)
+        for(int i=k; i<nums.size(); i++) {
+
+            ans.push_back(nums[dq.front()]);
+
+            //todo remove non viable values
+            while(dq.size() >0 && nums[dq.front()] <= i-k) {
+                dq.pop_front();
+            }
+
+            //todo remove smaller values
+            while(dq.size() > 0 && nums[dq.back()] <= nums[i]) {
+                dq.pop_back();
+            }
+            dq.push_back(i);
+        
+        }
+        ans.push_back(nums[dq.front()]);
+
+        std :: cout << "window maximum :     \n";
+        for(int val : ans) {
+            std :: cout << val << " ";
+        }
+        std :: cout << "\n";
+
+        return ans;
+    }
+
+}
+
+class {
+
+    //* two sum : leetcode 1
+    std :: vector<int> twoSum(std :: vector<int> &nums, int tar) {
+        
+        //^ create hashtable (element : index)
+        std :: unordered_map<int, int> mp;
+        std :: vector<int> ans;
+
+        //~ traverse array for first val
+        for(int i=0; i<nums.size(); i++) {
+
+            int first = nums[i];
+            int second = tar - first;
+
+            if(mp.find(second) != mp.end()) {
+                ans.push_back(i);
+                ans.push_back(mp[second]);
+                break;
+            }
+            
+            mp[first] = i;
+        }
+
+        return ans;
+    }
+
+    //* majority element : leetcode 169
+    int majorityElement(std :: vector<int>& nums) {
+
+        int n = nums.size();
+        int ans;
+        
+        //^ use map for frequency
+        std :: unordered_map<int, int> m;
+        for(int i=0; i< nums.size(); i++) {
+            m[nums[i]]++;
+        }
+
+        //! nothing... just verification
+        for(auto val : m) {
+            std :: cout << val.first << " " << val.second << "\n";
+        }
+
+        //? is appearing >n/2 times?
+        for(auto val : m) {
+            if(val.second > n/2) {
+                ans = val.first;
+            }
+        }
+
+        return ans;
+    }
+
+    //* anagram strings
+    bool isAnagram(std :: string s, std :: string t) {
+
+        if(s.length() != t.length()) return false;
+        
+        //? unordereded map
+        std :: unordered_map<char, int> m1;
+        std :: unordered_map<char, int> m2;
+
+        //^ calc freq of string s
+        for(int i=0; i<s.length(); i++) {
+            m1[s[i]]++;
+        }
+
+        //^ calc freq of string t
+        for(int i=0; i<t.length(); i++) {
+            m2[t[i]]++;
+        }
+
+        //! nothing... just verification
+        for(auto val : m1) {
+            std :: cout << val.first << " " << val.second << "\n";
+        }
+        std :: cerr << "\n";
+        //! nothing... just verification
+        for(auto val : m2) {
+            std :: cout << val.first << " " << val.second << "\n";
+        }
+
+        bool isAnag = true;
+        for(int i=0; i<m1.size(); i++) {
+            if(m1[i] != m2[i]) isAnag = false;
+        }
+
+        return isAnag;
+    }
+
+    //* roman to intiger
+    int romanToInt(std :: string s) {
+        
+        std :: unordered_map<char, int> roman = {
+            {'I',1}, {'V',5}, {'X',10}, {'L',50}, {'C',100}, {'D', 500}, {'M', 1000}
+        };
+
+        int ans = 0;
+        for(int i=0; i<s.length(); i++) {
+
+            int crt = roman[s[i]];
+            int next = (i+1 < s.length()) ? roman[s[i+1]] : 0;
+
+            if(crt < next) {
+                ans -= crt;
+            }
+            else {
+                ans += crt;
+            }
+        }
+
+        return ans;
+    }
+
+    bool isCycle(LinkedList LL) {
+    
+        Node* head = LL.getHead();
+
+        //^ map for tracking visited
+        std :: unordered_map<Node*, bool> visited;
+
+        Node* itr = head;
+        while(itr != NULL) {
+
+            if(visited[itr] == true) {
+                return true;
+            }
+            visited[itr] = true;
+            itr = itr -> next;
+        }
+
+        return false;
+        
+    }
+
+    //& abcabcbb
+    //? pwwkew
+    //~ bbbbb
+
+    //* longest substring without repeating characters
+    int lengthOfLongestSubstring(std :: string str) {
+
+        //! if empty string
+        if(str.empty()) return 0;
+        
+        //^ map for frequency tracking
+        std :: unordered_map<char, int> m;
+
+        //? variable to count length
+        int longestSubstr = INT_MIN;
+
+        //todo traverse string nd store frequencies
+        for(int i=0; i<str.length(); i++) {
+            
+            //? track current length
+            int crtLength = 0;
+            if(m.find(str[i]) != m.end()) {
+                crtLength = i - m[str[i]];
+            }
+            else {
+                crtLength++;
+            }
+
+            longestSubstr = std :: max(longestSubstr, crtLength);
+            m[str[i]] = i;
+        }
+
+        return longestSubstr;
+    }
+
+};
+
+class BinaryTree {
+
+    //* inorder traversal : leetcode 94
+    void inOrder(Node* root, std :: vector<int> &ans) {
+
+        //^ base case
+        if(root == NULL) return;
+
+        //~ first call for left, then root nd right
+        inOrder(root -> left, ans);
+        ans.push_back(root -> data);
+        inOrder(root -> right, ans);
+    }
+
+    std :: vector<int> inorderTraversal(Node* root) {
+        std :: vector<int> ans;
+        inOrder(root, ans);
+        return ans;
+    }
+
+    //* preorder traversal : leetcode 144
+    // helper function
+    void preOrderHelper(Node* root, std :: vector<int> &ans) {
+
+        if(root == NULL) return;
+
+        ans.push_back(root -> data);
+        preOrderHelper(root -> left, ans);
+        preOrderHelper(root -> right, ans);
+    }
+
+    std :: vector<int> preorderTraversal(Node* root) {
+        
+        std :: vector<int> ans;
+        preOrderHelper(root, ans);
+
+        return ans;
+    }
+
+    //* postorder traversal
+    // helper function 
+    void postOrderHelper(Node* root, std :: vector<int> &ans) {
+
+        if(root == NULL) return;
+
+        postOrderHelper(root -> left, ans);
+        postOrderHelper(root -> right, ans);
+        ans.push_back(root -> data);
+    }
+
+    std :: vector<int> postorderTraversal(Node* root) {
+
+        std :: vector<int> ans;
+        postOrderHelper(root, ans);
+
+        return ans;      
+    }
+
+
+    //* minimum depth : leetcode 111
+    int minDepth(Node* root) {
+        
+        //^ base case
+        if(root == NULL) return 0;
+
+        //~ rexurion...
+        int leftDepth = minDepth(root -> left);
+        int rightDepth = minDepth(root -> right);
+
+        //? note answer maybe wrong because of null nodes
+        int ans = std :: min(leftDepth, rightDepth) + 1;
+        int ans2 = std :: max(leftDepth, rightDepth) + 1;;
+
+        //! handle possible logical error
+        return ans != 1 ? ans : ans2;
+    }
+
+
+    //* count nodes in tree : leetcode 222
+    int countNodes(Node* root) {
+
+        //^ base case
+        if(root == NULL) return 0;
+
+        //~ rEcuRsiON... magiccc!
+        int leftNodes = countNodes(root -> left);
+        int rightNodes = countNodes(root -> right);
+
+        //! the whole logic is here 
+        return (leftNodes + rightNodes) + 1;
+    }
+
+    //* sum of nodes
+    int sumOfNodes(Node* root) {
+
+        //^ base case
+        if(root == NULL) return 0;
+
+        int leftSum = sumOfNodes(root -> left);
+        int rightSum = sumOfNodes(root -> right);
+
+        //? the overalll logic rely here
+        return leftSum + rightSum + root -> data;
+    }
+
+    //* same tree : leetcode 100
+    bool isSameTree(Node* p, Node* q) {
+
+        //^ base case (3 in 1)
+        if(p == NULL || q == NULL) return p == q;
+
+        bool isLeftSame = isSameTree(p -> left, q -> left);
+        bool isRightSame = isSameTree(p -> right, q -> right);
+
+        return isLeftSame && isRightSame && (p -> data == q -> data);
+    }
+
+    //* subtree of another tree : leetcode 572
+    bool isSubtree(Node* root, Node* subRoot) {
+            
+        //^ base case
+        if(root == NULL || subRoot == NULL) return root == subRoot; 
+        if(root -> data == subRoot -> data && isSameTree(root, subRoot)) return true;
+
+        //~ recursive call for left & right subtree
+        return isSubtree(root -> left, subRoot) || isSubtree(root -> right, subRoot);
+    }
+
+    //* sum of left leaves : leetcode 404
+    int sumOfLeftLeaves(Node* root) {
+        
+        //? initialize sum with zero
+        int sum = 0;
+        if(root == NULL) return 0;
+
+        if(root -> left != NULL) {
+            if(root -> left -> left == NULL && root -> left -> right == NULL) {
+                sum += root -> left -> data;
+            }
+            else {
+                sum += sumOfLeftLeaves(root -> left);
+            }
+        }
+
+        sum += sumOfLeftLeaves(root -> right);
+
+        return sum;
+    }
+
+    //^ global answer for max val
+    int ans = 0;
+
+    //* max height of tree : leetcode 104
+    int maxHeight(Node* root) {
+
+        //^ base case
+        if(root == NULL) return 0;
+
+        //~ nothing.. just recursion is recursioning!
+        int leftHT = maxHeight(root -> left);
+        int rightHT = maxHeight(root -> right);
+
+        //! current diameter
+        ans = std :: max(ans, leftHT + rightHT);
+
+        //? the overalll logic rely here
+        return std :: max(leftHT, rightHT) + 1;
+    }
+
+    //* diameter of binary tree : leetcode 543 
+    //? O(n^2) : unoptimized (271 ms)
+    int treeDiameter(Node* root) {
+
+        //^ base case
+        if(root == NULL) return 0;
+
+        //~ root, left and right subtre~e diameter 
+        int leftDiameter = treeDiameter(root -> left);
+        int rightDiameter = treeDiameter(root -> right);
+        int crtDiameter = maxHeight(root ->  left) + maxHeight(root -> right);
+
+        return std :: max(leftDiameter, std :: max(rightDiameter, crtDiameter));
+    }
+
+    //? optimized approach (0 ms)
+    int treeDiameterOpt(Node* root) {
+
+        //^ calling height function
+        maxHeight(root);
+
+        return ans;
+    }
+
+    //* top view of binary tree
+    void topView(Node* root) {
+
+        //& use horizontal distance concept
+        std :: map<int, int> dist; //? dist, node -> val
+
+        //^ level order traversal
+        std :: queue<std :: pair<Node*, int>> q; //? node, dist
+        q.push({root, 0});
+
+        //todo push values (also write logic here)
+        while(!q.empty()) {
+
+            Node* crt = q.front().first;
+            int crtHD = q.front().second;
+            q.pop();
+
+            //^ if already exist in map
+            if(dist.find(crtHD) == dist.end()) {
+                dist[crtHD] = crt -> data;
+            }
+
+            //~ left nd right childs
+            if(crt -> left != NULL) {
+                q.push({crt -> left, crtHD-1});
+            }
+            if(crt -> right != NULL) {
+                q.push({crt -> right, crtHD+1});
+            }
+        }
+
+        for(auto val : dist) {
+            std :: cout << val.second << " ";
+        }
+    }
+
+    //* kth level of binary tree
+    void kthLevel(Node* root, int k) {
+
+        //^ use level order traversal
+        std :: queue<std :: pair<Node*, int>> q; 
+        q.push({root, 1});
+
+        while(!q.empty()) {
+
+            Node* crt = q.front().first;
+            int level = q.front().second;
+            q.pop();
+
+            if(level < k) {
+                if(crt -> left != NULL) {
+                    q.push({crt -> left, level+1});
+                }
+                if(crt -> right != NULL) {
+                    q.push({crt -> right, level+1});
+                }
+            }
+
+            //todo print kth level elements
+            if(level == k) {
+                std :: cout << crt -> data << " ";
+            }
+        }
+
+    }
+
+    //* lowest common ancestor : leetcode 236
+    Node* commonAnces(Node* root, Node* p, Node* q) {
+
+        //^ base case(s)
+        if(root == NULL) return NULL;
+        if(root -> data == p -> data || root -> data == q -> data) return root;
+
+        //~ recursive calls
+        Node* leftLCA = commonAnces(root -> left, p, q);
+        Node* rightLCA = commonAnces(root -> right, p, q);
+
+        //? check nodes for finding ancestor
+        if(leftLCA && rightLCA) return root;
+        else if(leftLCA != NULL) return leftLCA;
+        else return rightLCA;
+    }
+
+    //* max width of binary tree
+    int maxWidth(Node* root) {
+
+        //^ edge case
+        if(root == NULL) return 0;
+
+        //? queue for level order traversal and indexing
+        std :: queue<std :: pair<Node*, long long>> q;
+        q.push({root, 0});
+
+        long long maxWidth = 0;
+            
+        while(!q.empty()) {
+
+            //^ start nd end index for a level
+            long long st = q.front().second;
+            long long end = q.back().second;
+
+            maxWidth = std :: max(maxWidth, end-st+1);
+            
+            //todo loop for processesing all nodes at a level
+            int crtSize = q.size();
+
+            for(int i=0; i< crtSize; i++) {
+
+                auto crt = q.front();
+                q.pop();
+
+                //~ push left nd right childs
+                if(crt.first -> left) {
+                    q.push({crt.first -> left, crt.second*2+1});
+                }
+                if(crt.first -> right) {
+                    q.push({crt.first -> right, crt.second*2+2});
+                }
+            } 
+        }
+
+        return maxWidth;
+    }
+
+    //* transform into sum tree
+    int sumTree(Node* root) {
+
+        if(root == NULL) return 0;
+
+        //~ recursion 
+        int leftSum = sumTree(root -> left);
+        int rightSum = sumTree(root -> right);
+
+        return leftSum + rightSum + root -> data;
+    }
+
+    //* build tree from preorder and in order (without -1s)
+    //? helper search function
+    int search(std :: vector<int> in, int l, int r, int rootVal) {
+        for(int i=l; i<=r; i++) {
+            if(in[i] == rootVal) return i;
+        }
+        return -1;
+    }
+
+    Node* build(std :: vector<int>& pre, std :: vector<int>& in, int& preIdx, int l, int r) {
+        
+        //^ base case for NULL values
+        if(l > r) return NULL;
+
+        //^ build current root
+        Node* root = new Node(pre[preIdx]);
+
+        //? track of left nd rigth boundries with help of inorder sequence
+        int inIdx = search(in, l, r, pre[preIdx]);
+        preIdx++;
+
+        //~ just faith in recursion
+        root -> left = build(pre, in, preIdx, l, inIdx-1);
+        root -> right = build(pre, in, preIdx, inIdx+1, r);
+
+        return root;
+    }
+
+    //* binary tree paths
+    void binaryTreePaths(Node* root, std :: string path = "", std :: vector<std :: string> ans = {}) {
+        
+        //^ initialize with root val
+        if(path == "") {
+            path = std :: to_string(root->data);
+        }
+        
+        //^ base case
+        if(root->left == NULL && root->right == NULL) {
+            ans.push_back(path);
+            
+            //todo Print all paths
+            for(auto& p : ans) {
+                std :: cout << p << std :: endl;
+            }
+            return;
+        }
+        
+        //~ recursive call for right nd left subtree
+        if(root->left) {
+            binaryTreePaths(root->left, path + "->" + std :: to_string(root->left->data), ans);
+        }
+        if(root->right) {
+            binaryTreePaths(root->right, path + "->" + std :: to_string(root->right->data), ans);
+        }
+    }
+
+    //* flatten binary tree to linked list
+    Node* nextRight = NULL; //? global pointer
+    void flatten(Node* root) {
+
+        //^ base case
+        if(root == NULL) return;
+
+        //~ recursive calls (right -> left -> root)
+        flatten(root -> right);
+        flatten(root -> left);
+
+        root -> left = NULL;
+        root -> right = nextRight;
+        nextRight = root;
+    }
+
+    //* has path sum : leetcode 112
+    bool hasPathSum(Node* root, int target, int crtSum) {
+
+        
+        //? increase current sum by root value
+        crtSum += root -> data;
+
+        //^ base case
+        if(root -> left == NULL && root -> right == NULL) {
+            return crtSum == target;
+        }
+
+        //^ variables for left nd right subtree
+        bool leftPath = false, rightPath= false;
+
+        //~ recursssiion!
+        if(root -> left != NULL) {
+            leftPath = hasPathSum(root -> left, target, crtSum);
+        }
+        if(root -> right != NULL) {
+            rightPath = hasPathSum(root -> right, target, crtSum);
+        }
+
+        //! sum either be present in left or right subtree
+        return leftPath || rightPath;
+    }
+
+    //* zigzag traversal : Leetcodec 103
+    std :: vector<std :: vector<int>> zigzag(Node* root) {
+
+        std :: vector<std :: vector<int>> ans;
+
+        //^ empty tree case
+        if(root == NULL) return ans;
+
+        //? queue & level tracker
+        std :: queue<Node*> q;
+        q.push(root);
+        int level = 1;
+
+        while(!q.empty()) {
+
+            int queueSize = q.size();
+            std :: vector<int> crtLevel;
+
+            for(int i=0; i<queueSize; i++) {
+                
+                Node* crt = q.front();
+                q.pop();
+                crtLevel.push_back(crt -> data);
+
+                //~ push left nd right childs 
+                if(crt -> left) {
+                    q.push(crt -> left);
+                }
+                if(crt -> right) {
+                    q.push(crt -> right);
+                }
+            }
+
+            //! reverse for odd levels
+            if(level % 2 == 0) {
+                std :: reverse(crtLevel.begin(), crtLevel.end());
+            }
+
+            //^ push in main answer array
+            ans.push_back(crtLevel);
+            level++;
+        }
+    
+        return ans;
+    }
+};
+
+class BST {
+
+    //* delete Node in BST : leetcode 450
+    Node* getIS(Node* root) { // leftmost node in right subtree
+        while(root != NULL && root -> left != NULL) {
+            root = root -> left;
+        }
+        return root;
+    }
+
+    Node* deleteNode(Node* root, int key) {
+
+        //^ base case (if key doesn't exist in tree)
+        if(root == NULL) return NULL;
+
+        //~ search for key
+        if(key < root -> data) {
+            root -> left = deleteNode(root -> left, key);
+        }
+        else if (key > root -> data) {
+            root -> right = deleteNode(root -> right, key);
+        }
+        //? root == key
+        else {
+
+            //& case 1 : delete leaf node
+            if(root -> left == NULL && root -> right == NULL) {
+
+                //todo delete node and break connection
+                delete root;
+                return NULL;
+            }
+
+            //& case 2 : one child node
+            else if(root -> left == NULL || root -> right == NULL) {
+
+                //todo delete that node and return not-NULL (child) to parent
+                delete root;
+                return root -> left == NULL ? root -> right : root -> left;
+            }
+
+            //& case 3 : two child node
+            else {
+
+                //todo find inorder successor & repalce it with root
+                Node* IS = getIS(root -> right);
+                root -> data = IS -> data;
+                root -> right = deleteNode(root -> right, IS -> data);
+            }
+        }
+        return root;
+    }
+
+    //* sorted array to BST : leetocde 108
+    Node* arrayTo_BST(std :: vector<int> nums, int st, int end) {
+
+        //^ base case
+        if(st > end) return NULL;
+
+        int mid = st + (end - st)/2;
+
+        //? mid element will be root of BST
+        Node* root = new Node(nums[mid]);
+
+        //~ recursive calls for left nd right subtree
+        root -> left = arrayTo_BST(nums, st, mid-1);
+        root -> right = arrayTo_BST(nums, mid+1, end);
+
+        return root;
+    }
+
+    //* validate BST : leetcode 98
+    bool isValidBST(Node* root, Node* min, Node* max) {
+
+        //^ base case
+        if(root == NULL) return true;
+
+        //todo compare root with min & max allowed val
+        if(min != NULL && (root -> data) <= (min -> data)) return false;
+        if(max != NULL && (root -> data) >= (max -> data)) return false;
+
+        //~ recursive call for left nd right subtree
+        return isValidBST(root -> left, min, root) && isValidBST(root -> right, root, max);
+    }
+
+    //* min distance between nodes : leetcode 783
+    //? inorder helper function
+    void inorderVector(Node* root, std :: vector<int> &nums) {
+
+        //^ base case
+        if(root == NULL) return;
+        
+        inorderVector(root -> left, nums);
+        nums.push_back(root -> data);
+        inorderVector(root -> right, nums);
+    }
+
+    int minDistance(Node* root) {
+
+        //^ inorder traversal for sorted sequence
+        std :: vector<int> nums;
+        inorderVector(root, nums);
+
+        int minDist = INT_MAX;
+        for(int i=1; i<nums.size(); i++) {
+            if(nums[i] - nums[i-1] < minDist) {
+                minDist = nums[i] - nums[i-1];
+            }
+        }
+
+        return minDist;
+    }
+
+    //* kth smallest in BST : leetcode 230
+    int kthSmall(Node* root, int k) {
+
+        //^ find inorder sequence
+        std :: vector<int> nums;
+        inorderVector(root, nums);
+
+        return nums[k-1];
+    }
+
+    //* lowest common ancestor : leetcode 235
+    Node* lowestComAnc(Node* root, Node* p, Node* q) {
+
+        //^ base case
+        if(root == NULL) return NULL;
+
+        if((p -> data) < (root -> data) && (q -> data) < (root -> data)) {
+            return lowestComAnc(root -> left, p, q);
+        }
+        else if((p -> data) > (root -> data) && (q -> data) > (root -> data)) {
+            return lowestComAnc(root -> right, p, q);
+        }
+        else {
+            return root;
+        }
+    }
+
+    //* constrcut BST from preorder : leetcode 1008
+    Node* preOrderBST(std :: vector<int> nums, int i, int upperBound) {
+
+        //^ base case(s)
+        if(i >= nums.size() || nums[i] > upperBound) return NULL;
+
+        Node* root = new Node(nums[i]);
+        i++;
+
+        root -> left =  preOrderBST(nums, i, root -> data);
+        root -> right =  preOrderBST(nums, i, upperBound);
+
+        return root;
+    }
+
+    //* recover tree : leetcode 99
+    //~ global variables and helper traversal function
+    Node* prev = NULL;
+    Node* first = NULL;
+    Node* second = NULL;
+
+    void inorderTraverse(Node* root) {
+        
+        //^ base case
+        if(root == NULL) return;
+
+        inorderTraverse(root -> left);
+
+        //todo check prev val
+        if(prev != NULL && prev -> data > root -> data) {
+            if(first == NULL) {
+                first = prev;
+            }
+            second = root;
+        }
+
+        prev = root;
+        inorderTraverse(root -> right);
+
+    }
+
+    void recover(Node* root) {
+
+        inorderTraverse(root);
+
+        //^ swap values of first and second
+        std :: swap(first -> data, second -> data);
+
+    }
+
+};
+
 int main() {
 
     //! blah blah blah
