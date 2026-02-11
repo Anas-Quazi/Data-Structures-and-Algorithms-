@@ -5,6 +5,8 @@
 #include <vector>
 #include <queue>
 #include <cmath>
+#include <unordered_map>
+#include <stack>
 
 //? class for node
 class Node {
@@ -442,7 +444,7 @@ void recover(Node* root) {
 
 }
 
-//* sorted linked list to BST : leetcode 109
+//* sorted linked list to BST : leetcode 109 (not working yet)
 //& class/ structure for node
 class LL_Node {
 public: 
@@ -510,7 +512,7 @@ Node* insertLL(Node* root, int val) {
         return new Node(val);
     }
 
-    //todo insert in dorted order
+    //todo insert in sorted order
     if(val < root -> data) {
         root -> left = insertLL(root -> left, val);
     }
@@ -535,21 +537,202 @@ Node* listToBST(LL_Node* head) {
     return root;
 }
 
+//* two sum (BST input) 
+bool twoSum(Node* root, int tar) {
+
+    //^ calculate inorder traversal of BST
+    std ::vector<int> nums;
+    inorderVector(root, nums);
+
+    //& hahsmap
+    std :: unordered_map<int, int> m;
+
+    for(int i=0; i<nums.size(); i++) {
+
+        int first = nums[i];
+        int second = tar - first;
+
+        //? check if val exist in map
+        if(m.find(second) != m.end()) {
+            return true;
+            break;
+        }
+
+        //todo add val : index in map
+        m[first] = i;
+    }
+
+    return false;
+}
+
+//* largest BST in binary tree (brute force approach) : O(n*n)
+int size = 0;
+Node* min = NULL;
+Node* max = NULL;
+
+int largestBST_bruteforce(Node* root) {
+    
+    if(root == NULL && isValidBST(root, min, max)) return size;
+
+
+}
+
+//* optimized (using class)
+
+//? class for storing and returning information of a node to parent
+class BST_Info {
+
+public:
+    //^ attributes for a node (to send info to parent)
+    int min, max, size;
+
+    //^ constructor
+    BST_Info(int min, int max, int size) {
+        this->min = min;
+        this->max = max;
+        this->size = size;
+    }
+
+};
+
+//? helper function to return parameter values (core logic actually...)
+BST_Info returnInfo(Node* root) {
+
+    //^ base case
+    if(root == NULL) {
+        return BST_Info(INT_MAX, INT_MIN, 0);
+    }
+
+    BST_Info leftST = returnInfo(root -> left);
+    BST_Info rightST = returnInfo(root -> right);
+
+    //todo check for valid BST
+    if(root -> data > leftST.max && root -> data < rightST.min) {
+
+        //& update current values
+        int crtMin = std :: min(leftST.min, root -> data);
+        int crtMax = std :: max(rightST.max, root -> data);
+        int crtSize = leftST.size + rightST.size + 1;
+
+        return BST_Info(crtMin, crtMax, crtSize);
+    }
+
+    return BST_Info(INT_MIN, INT_MAX, std :: max(leftST.size, rightST.size));
+}
+
+int largestBST(Node* root) {
+
+    //todo taek paarmeters from helper function and return max size
+    BST_Info info = returnInfo(root);
+    return info.size;
+}
+
+//* design class for BST iterator : leetcode 173 (linear time complexity)
+class BST_Iterator {
+
+public:
+    //& use stack instead of recursion
+    std :: stack<Node*> stk;
+
+    //& helper function to store left Nodes
+    void storeLeftNodes(Node* root) {
+
+        while(root != NULL) {
+            stk.push(root);
+            root = root -> left;
+        }
+    }
+
+    //^ constructor
+    BST_Iterator(Node* root) {
+        storeLeftNodes(root);
+    }
+
+    //^ return next pointer value
+    int next() {
+
+        //todo return top most (as next node is on top)
+        Node* ans = stk.top();
+        stk.pop();
+
+        //? check if ans has right? (if yes then store its all left nodes)
+        if(ans -> right) {
+            storeLeftNodes(ans -> right);
+        }
+
+        return ans -> data;
+    }
+
+    //^ check if it has next value or not?
+    bool hasNext() {
+
+        //todo return stack is empty or not
+        return !stk.empty();
+    }
+};
+
+//* inorder predecessor and succesor in BST
+std :: vector<int> pred_succs(Node* root, int key) {
+
+    Node* crt = root;
+    Node* IS = NULL;
+    Node* IP = NULL;
+    std :: vector<Node*> ans;
+
+    while(crt != NULL) {
+
+        if(key < crt -> data) {
+            IS = crt;
+            crt = crt -> left;
+        }
+        else if(key > crt -> data) {
+            IP = crt;
+            crt = crt -> right;
+        }
+        else {
+            //& IP = rightmost in left subtree
+            if(crt -> left) {
+                IP = crt -> left;
+                while(IP != NULL && IP -> right) {
+                    IP = IP -> right;
+                }
+            }
+            
+            //& IS = leftmost in right subtree
+            if(crt -> right) {
+                IS = crt -> right;
+                while(IS != NULL && IS -> left != NULL) {
+                    IS = IS -> left;
+                }
+            }
+            break;
+        }
+    }
+    return {IP -> data, IS -> data};
+}
+
 int main() {
 
     std :: vector<int> arr = {3, 2, 1, 5, 6, 11, 2, 4};
-    std :: vector<int> nums = {42, 52, 62, 82, 88};
+    std :: vector<int> nums = {1, 5, 8, 10, 15, 7};
     Node* root = buildTree(nums);
     Node* root2 = buildTree(arr);
 
+    Node* joeRoot = new Node(6);
+    joeRoot -> left = new Node(4);
+    joeRoot -> right = new Node(8);
+    joeRoot -> left -> left = new Node(1);
+    joeRoot -> left -> right = new Node(5);
+    joeRoot -> right -> left = new Node(7);
+    joeRoot -> right -> right = new Node(9);
+
     inorder(root);
     std :: cout << "\n\n";
-    printTree(root);
-    std :: cout << "\n\n";
-    printTree(root2);
-    Node* joeRoot = mergeBST(root, root2);
-    std :: cout << "\n\n";
     printTree(joeRoot);
+    std :: cout << "\n\n";
+
+    std :: vector<int> ans = pred_succs(joeRoot, 3);
+    std :: cout << ans[0] << "\n" << ans[1];
 
     return 0;
 }
