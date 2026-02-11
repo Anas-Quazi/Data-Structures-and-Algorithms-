@@ -16,11 +16,12 @@ public:
     int data;
     Node* left;
     Node* right;
+    Node* next;
 
     //^ constructor for initialization
     Node(int val) {
         data = val;
-        left = right = NULL;
+        left = right = next = NULL;
     }
 };
 
@@ -683,7 +684,7 @@ void morrisAlgo(Node* crtRoot) {
         }
         else {
 
-            //? inorder predecessor pointer
+            //? inorder predecessor pointer (rightmost in left subtree)
             Node* inPred = crtRoot -> left;
             while(inPred -> right != NULL && inPred -> right != crtRoot) {
                 inPred = inPred -> right;
@@ -826,6 +827,54 @@ std :: vector<std :: vector<int>> zigzag(Node* root) {
     }
  
     return ans;
+}
+
+//* populate next right pointer in each node
+Node* connect(Node* root) {
+
+    //^ base case
+    if(root == NULL || root -> left == NULL) return root;
+
+    //? level order traversal
+    std :: queue<Node*> q;
+    q.push(root);
+    q.push(NULL); //~ to indicate end of a level
+
+    Node* prev = NULL; //~ to tack previos value
+
+    //todo traverse whole tree and connect next pointer
+    while(!q.empty()) {
+
+        Node* crt = q.front();
+        q.pop();
+        
+        if(crt == NULL) {
+            
+            //! two cases : is queue empty
+            if(q.empty()) {
+                break;
+            }
+            q.push(NULL);
+        }
+        else {
+
+            //^ include left nd right childs (if exists)
+            if(crt -> left != NULL) {
+                q.push(crt -> left);
+            }
+            if(crt -> right != NULL) {
+                q.push(crt -> right);
+            }
+
+            //^ if prev is not null then make a connection
+            if(prev != NULL) {
+                prev -> next = crt;
+            }
+        }
+        prev = crt;
+    }
+
+    return root;
 }
 
 int main() {
