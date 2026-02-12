@@ -38,6 +38,9 @@ public:
         }
     }
 
+    
+
+    //^ print heap (array order)
     void print() {
         for(int i=1; i<=size; i++) {
             std :: cout << arr[i] << " ";
