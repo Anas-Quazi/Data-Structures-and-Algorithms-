@@ -22,7 +22,7 @@ public:
 
         size += 1;
         int idx = size;
-        arr[idx] = val;
+        arr.push_back(val);
 
         //todo place value to its correct position
         while(idx > 1) {
@@ -38,13 +38,51 @@ public:
         }
     }
 
-    
+    //^ function for deletion (deleting root)
+    void deleteRoot() {
+
+        if(size == 0) {
+            std :: cout << "nothing to delete!\n";
+            return;
+        }
+
+        //& swap root with last node
+        std :: swap(arr[1], arr[size]);
+        size--; //~ delete last node
+
+        //todo take root to its correct position
+        int i = 1;
+        while(i <= size) {
+
+            //^ left nd right child index
+            int leftIdx = 2*i;
+            int rightIdx = 2*i+1;
+            int largest = i;
+
+            if(leftIdx <= size && arr[i] < arr[leftIdx]) {
+                largest = leftIdx;
+            }
+            if(rightIdx <= size && arr[i] < arr[rightIdx]) {
+                largest = rightIdx;
+            }
+
+            //? if left right child is actually larger
+            if(largest != i) {
+                std :: swap(arr[i], arr[largest]);
+                largest = i;
+            }
+            else {
+                break;
+            }
+        }
+    }    
 
     //^ print heap (array order)
     void print() {
         for(int i=1; i<=size; i++) {
             std :: cout << arr[i] << " ";
         }
+        std :: cout << "\n\n";
     }
 };
 
@@ -56,6 +94,9 @@ int main() {
     h.insert(8);
     h.insert(25);
 
+    h.print();
+
+    h.deleteRoot();
     h.print();
 
     return 0;
