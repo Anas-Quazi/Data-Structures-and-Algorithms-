@@ -86,6 +86,70 @@ public:
     }
 };
 
+//* heapify algorithm (logn)
+void heapifyAlgo(std :: vector<int> &arr, int n, int i) {
+
+    int largest = i;
+    int left = 2*i;
+    int right = 2*i-1;
+
+    //^ compare largest's val with child nodes (only index update)
+    if(left <= n && arr[largest] < arr[left]) {
+        largest = left;
+    }
+    if(right <= n && arr[largest] < arr[right]) {
+        largest = right;
+    }
+
+    //todo check value of largest and put it on right place (actual node change)
+    if(largest != i) {
+        std :: swap(arr[largest], arr[i]);
+        heapifyAlgo(arr, n, largest);
+    }
+}
+
+void heapify(std :: vector<int>& arr) {
+
+    int n = arr.size();
+
+    for(int i=n/2; i>0; i--) {
+        heapifyAlgo(arr,n, i);
+    }
+
+    //? print array after heapify
+    for(int i=1; i<=n; i++) {
+        std :: cout << arr[i] << " ";
+    }
+    std :: cout << "\n\n";
+}
+
+//* heap sort
+void heapSort(std :: vector<int>& arr) {
+
+    int n = arr.size();
+    int size = n;
+
+    //todo sort till size is > 1
+    while(size > 1) {
+
+        //^ step 1 : swap first and last(unosorted)
+        std :: swap(arr[size], arr[1]);
+
+        //^ step 2 : decrease size i.e ignore sorted ones
+        size--;
+
+        //^ step 2 : place first(root) to its correct position
+        heapifyAlgo(arr, size, 1);
+
+    }
+
+    //& print array after sorting
+    for(int i=1; i<=n; i++) {
+        std :: cout << arr[i] << " ";
+    }
+    std :: cout << "\n\n";
+}
+
 int main() {
 
     heap h;
@@ -96,8 +160,12 @@ int main() {
 
     h.print();
 
-    h.deleteRoot();
-    h.print();
+    std :: vector<int> nums = {-1, 16, 6, 10, 28, 12, 11, 25, 12};
+
+    //? create heap from array
+    heapify(nums);
+    //? heap sort
+    heapSort(nums);
 
     return 0;
 }
