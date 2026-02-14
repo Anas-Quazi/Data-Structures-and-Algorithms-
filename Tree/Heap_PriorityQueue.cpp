@@ -2,19 +2,22 @@
 
 #include <iostream>
 #include <vector>
+#include <queue> //~ inclue priority queue header file
 
 
-//? class for implementing heap (max heap)
-class heap {
+//? class for implementing heap (by default max heap, but we can change)
+class Heap {
 
 public:
     std :: vector<int> arr;
     int size;
+    bool isMaxHeap;
 
     //^ constructor for initialization
-    heap() {
+    Heap(bool maxHeap = true) {
         arr.push_back(-1);
         size = 0;
+        isMaxHeap = maxHeap;
     }
 
     //^ method to insert value
@@ -28,7 +31,11 @@ public:
         while(idx > 1) {
             int par = idx / 2;
 
-            if(arr[par] < arr[idx]) {
+            //! Comparison based on heap type
+            bool shouldSwap = isMaxHeap ? (arr[par] < arr[idx])   //~ Max heap
+                                        : (arr[par] > arr[idx]);  //~ Min heap
+
+            if(shouldSwap) {
                 std :: swap(arr[par], arr[idx]);
                 idx = par;
             }
@@ -57,19 +64,34 @@ public:
             //^ left nd right child index
             int leftIdx = 2*i;
             int rightIdx = 2*i+1;
-            int largest = i;
+            int target = i;
 
-            if(leftIdx <= size && arr[i] < arr[leftIdx]) {
-                largest = leftIdx;
+            //& find target based on heap type
+            if(isMaxHeap) {
+
+                //^ for max heap : find largest
+                if(leftIdx <= size && arr[target] < arr[leftIdx]) {
+                    target = leftIdx;
+                }
+                if(rightIdx <= size && arr[target] < arr[rightIdx]) {
+                    target = rightIdx;
+                }
             }
-            if(rightIdx <= size && arr[i] < arr[rightIdx]) {
-                largest = rightIdx;
+            else {
+
+                //^ for max heap : find largest
+                if(leftIdx <= size && arr[target] > arr[leftIdx]) {
+                    target = leftIdx;
+                }
+                if(rightIdx <= size && arr[target] > arr[rightIdx]) {
+                    target = rightIdx;
+                }
             }
 
             //? if left right child is actually larger
-            if(largest != i) {
-                std :: swap(arr[i], arr[largest]);
-                largest = i;
+            if(target != i) {
+                std :: swap(arr[i], arr[target]);
+                i = target;
             }
             else {
                 break;
@@ -87,33 +109,43 @@ public:
 };
 
 //* heapify algorithm (logn)
-void heapifyAlgo(std :: vector<int> &arr, int n, int i) {
+void heapifyAlgo(std :: vector<int> &arr, int n, int i, bool isMaxHeap = true) {
 
-    int largest = i;
+    int target = i;
     int left = 2*i;
-    int right = 2*i-1;
+    int right = 2*i+1;
 
-    //^ compare largest's val with child nodes (only index update)
-    if(left <= n && arr[largest] < arr[left]) {
-        largest = left;
+    //^ compare largest's/ smallest val with child nodes (only index update)
+    if(isMaxHeap) {
+        if(left <= n && arr[target] < arr[left]) {
+            target = left;
+        }
+        if(right <= n && arr[target] < arr[right]) {
+            target = right;
+        }
     }
-    if(right <= n && arr[largest] < arr[right]) {
-        largest = right;
+    else {
+        if(left <= n && arr[target] > arr[left]) {
+            target = left;
+        }
+        if(right <= n && arr[target] > arr[right]) {
+            target = right;
+        }
     }
 
     //todo check value of largest and put it on right place (actual node change)
-    if(largest != i) {
-        std :: swap(arr[largest], arr[i]);
-        heapifyAlgo(arr, n, largest);
+    if(target != i) {
+        std :: swap(arr[target], arr[i]);
+        heapifyAlgo(arr, n, target);
     }
 }
 
-void heapify(std :: vector<int>& arr) {
+void heapify(std :: vector<int>& arr, bool isMaxHeap = true) {
 
-    int n = arr.size();
+    int n = arr.size() - 1;
 
     for(int i=n/2; i>0; i--) {
-        heapifyAlgo(arr,n, i);
+        heapifyAlgo(arr,n, i, isMaxHeap);
     }
 
     //? print array after heapify
@@ -123,10 +155,16 @@ void heapify(std :: vector<int>& arr) {
     std :: cout << "\n\n";
 }
 
-//* heap sort
-void heapSort(std :: vector<int>& arr) {
+//* heap sort : O(nlogn)
+void heapSort(std :: vector<int>& arr, bool isMaxHeap = true) {
 
-    int n = arr.size();
+    int n = arr.size() - 1;
+
+    //! Step 0: Build max/min heap first
+    for(int i = n/2; i >= 1; i--) {
+        heapifyAlgo(arr, n, i, isMaxHeap);
+    }
+
     int size = n;
 
     //todo sort till size is > 1
@@ -138,8 +176,8 @@ void heapSort(std :: vector<int>& arr) {
         //^ step 2 : decrease size i.e ignore sorted ones
         size--;
 
-        //^ step 2 : place first(root) to its correct position
-        heapifyAlgo(arr, size, 1);
+        //^ step 3 : place first(root) to its correct position
+        heapifyAlgo(arr, size, 1, isMaxHeap);
 
     }
 
@@ -150,9 +188,32 @@ void heapSort(std :: vector<int>& arr) {
     std :: cout << "\n\n";
 }
 
+//* priority queue functions 
+void priorQueue() {
+
+    //^ creation
+    std :: priority_queue<int> pq;
+
+    //? insertion/deletion
+    pq.push(7);
+    pq.push(21);
+    pq.push(51);
+    pq.push(9);
+    // pq.pop();
+
+    //? top and display
+    std :: cout << "top : " << pq.top() << "\n";
+
+    while(!pq.empty()) {
+        std :: cout << pq.top() << " ";
+        pq.pop();
+    }
+    std :: cout << "\n\n";
+}
+
 int main() {
 
-    heap h;
+    Heap h;
     h.insert(10);
     h.insert(16);
     h.insert(8);
@@ -162,10 +223,11 @@ int main() {
 
     std :: vector<int> nums = {-1, 16, 6, 10, 28, 12, 11, 25, 12};
 
-    //? create heap from array
-    heapify(nums);
+    priorQueue();
+
     //? heap sort
-    heapSort(nums);
+    heapSort(nums, false);
+    
 
     return 0;
 }
