@@ -136,7 +136,7 @@ void heapifyAlgo(std :: vector<int> &arr, int n, int i, bool isMaxHeap = true) {
     //todo check value of largest and put it on right place (actual node change)
     if(target != i) {
         std :: swap(arr[target], arr[i]);
-        heapifyAlgo(arr, n, target);
+        heapifyAlgo(arr, n, target, isMaxHeap);
     }
 }
 
