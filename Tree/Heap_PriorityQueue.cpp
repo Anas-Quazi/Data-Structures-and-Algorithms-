@@ -232,6 +232,26 @@ int kthSmall(std :: vector<int>& nums, int k) {
      return pq.top();
 }
 
+//*kth largest element
+int kthLargest(std :: vector<int>& nums, int k) {
+
+    //^ create min heap of first k elements
+    std :: priority_queue<int, std :: vector<int>, std :: greater<int>> pq;
+    for(int i=0; i<k; i++) {
+        pq.push(nums[i]);
+    }
+
+    //? compare with rest 
+    for(int i=k; i<nums.size(); i++) {
+        if(nums[i] > pq.top()) {
+            pq.pop();
+            pq.push(nums[i]);
+        }
+    }
+
+    return pq.top();
+}
+
 int main() {
 
     Heap h;
@@ -245,6 +265,8 @@ int main() {
     std :: vector<int> nums = {-1, 16, 6, 10, 28, 12, 11, 25, 12};
 
     std :: cout << kthSmall(nums, 1);
+    std :: cout << "\n\n";
+    std :: cout << kthLargest(nums, 7);
     
 
     return 0;
