@@ -211,6 +211,27 @@ void priorQueue() {
     std :: cout << "\n\n";
 }
 
+//* kth smallest element (using max heap) 
+int kthSmall(std :: vector<int>& nums, int k) {
+
+    //^ step 1 : create max heap for first k elements
+    std :: priority_queue<int> pq;
+    for(int i=0; i<k; i++) {
+        pq.push(nums[i]);
+    }
+
+    //^ step 2 : compare rest elements with root node
+    for(int i=k; i<nums.size(); i++) {
+        if(nums[i] < pq.top()) {
+            pq.pop();
+            pq.push(nums[i]);
+        }
+     }
+
+     //& top/root is the smallest at last
+     return pq.top();
+}
+
 int main() {
 
     Heap h;
@@ -223,10 +244,7 @@ int main() {
 
     std :: vector<int> nums = {-1, 16, 6, 10, 28, 12, 11, 25, 12};
 
-    priorQueue();
-
-    //? heap sort
-    heapSort(nums, false);
+    std :: cout << kthSmall(nums, 1);
     
 
     return 0;
