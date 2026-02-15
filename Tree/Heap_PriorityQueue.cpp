@@ -252,6 +252,55 @@ int kthLargest(std :: vector<int>& nums, int k) {
     return pq.top();
 }
 
+//* kth largest in stream : leetcode 703
+class KthLargest {
+public:
+
+    std :: priority_queue<int, std :: vector<int>, std :: greater<int>> pq;
+    int k;
+
+    KthLargest(int k, std :: vector<int>& nums) {
+
+        this -> k = k;    
+        //^ create min heap of first k elements
+        for(int i : nums) {
+            pq.push(i);
+
+            if(pq.size() > k) {
+            pq.pop();
+        }
+        }
+        
+    }
+    
+    int add(int val) {
+        
+        if(pq.size() < k) {
+            pq.push(val);
+        }
+        else if(val > pq.top()) {
+            pq.pop();
+            pq.push(val);
+        }
+
+        return pq.top();
+    }
+};
+
+//* merge 2 bianry max heaps
+std :: vector<int> mergeHeap(std :: vector<int>& a, std :: vector<int>& b) {
+
+    //? merge array
+    for(int i=1; i<b.size(); i++) {
+        a.push_back(b[i]);
+    }
+
+    //^ build heap using merged array
+    heapify(a,true);
+
+    return a;
+}
+
 int main() {
 
     Heap h;
@@ -262,12 +311,13 @@ int main() {
 
     h.print();
 
-    std :: vector<int> nums = {-1, 16, 6, 10, 28, 12, 11, 25, 12};
+    std :: vector<int> nums = {-1, 786, 50, 313, 28, 21, 12, 25, 16, 11, 10};
+    std :: vector<int> n2 = {-1, 12, 7, 6, 5, 4, 1};
 
-    std :: cout << kthSmall(nums, 1);
-    std :: cout << "\n\n";
-    std :: cout << kthLargest(nums, 7);
-    
+    std :: vector<int> merge = mergeHeap(nums, n2);
+    for(int val : merge) {
+        std :: cout << val << " ";
+    }    
 
     return 0;
 }
