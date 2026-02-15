@@ -232,7 +232,7 @@ int kthSmall(std :: vector<int>& nums, int k) {
      return pq.top();
 }
 
-//*kth largest element
+//*kth largest element : leetcode 215
 int kthLargest(std :: vector<int>& nums, int k) {
 
     //^ create min heap of first k elements
