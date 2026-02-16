@@ -318,19 +318,86 @@ public:
         data = val;
         left = right = next = NULL;
     }
-}
-
-bool isCBT(Node* root, int i, int n) {
+};
+int countNodes(Node* root) {
 
     //^ base case
+    if(root == NULL) return 0;
+
+    //~ rEcuRsiON... magiccc!
+    int leftNodes = countNodes(root -> left);
+    int rightNodes = countNodes(root -> right);
+
+    //! the whole logic is here 
+    return (leftNodes + rightNodes) + 1;
+}
+
+//? check if tree is Complete Binary Tree (call with index = 1)
+bool isCBT(Node* root, int i, int n) {
+    //^ empty tree is CBT
     if(root == NULL) return true;
 
-    
-}
-bool isHeap(Node* root) {
+    //^ invalid index (1-based indexing): if index > n it's not CBT
+    if(i > n) return false;
 
-    if(isCBT() &&)
+    //~ recursively verify left and right positions
+    return isCBT(root -> left, 2*i, n) && isCBT(root -> right, 2*i + 1, n);
 }
+
+//? check if tree is Max-Heap (complete + heap property)
+bool isMaxHeap(Node* root) {
+
+    //^ empty tree is valid heap
+    if(root == NULL) return true;
+
+    //& total node count (used by CBT check)
+    int n = countNodes(root);
+
+    //todo must be complete binary tree first (start index = 1)
+    if(!isCBT(root, 1, n)) return false;
+
+    //^ leaf node -> valid heap
+    if(root -> left == NULL && root -> right == NULL) return true;
+
+    //^ only left child present
+    if(root -> left && !root -> right) {
+        return (root -> data >= root -> left -> data) && isMaxHeap(root -> left);
+    }
+
+    return (root -> data >= root -> left -> data)
+        && (root -> data >= root -> right -> data)
+        && isMaxHeap(root -> left)
+        && isMaxHeap(root -> right);
+}
+
+//* minimum number of ropes
+long long minRopes(std :: vector<long long>& nums) {
+
+    //& min heap for smallest elements
+    std :: priority_queue<long long, std :: vector<long long>, std :: greater<long long>> pq;
+
+    for(long long val : nums) {
+        pq.push(val);
+    }
+
+    long long ans = 0;
+    //todo pick two smallest elements
+    while(pq.size() > 1) {
+
+        long long n1 = pq.top();
+        pq.pop();
+        long long n2 = pq.top();
+        pq.pop();
+        
+        long long sum = n1 + n2;
+        ans += sum;
+        pq.push(sum);
+    }
+
+    return ans;
+}
+
+//* convert BST to min heap
 
 int main() {
 
@@ -345,10 +412,8 @@ int main() {
     std :: vector<int> nums = {-1, 786, 50, 313, 28, 21, 12, 25, 16, 11, 10};
     std :: vector<int> n2 = {-1, 12, 7, 6, 5, 4, 1};
 
-    std :: vector<int> merge = mergeHeap(nums, n2);
-    for(int val : merge) {
-        std :: cout << val << " ";
-    }    
+    std :: vector<long long> vec = {4, 3, 2, 6};
+    std :: cout << minRopes(vec);    
 
     return 0;
 }
