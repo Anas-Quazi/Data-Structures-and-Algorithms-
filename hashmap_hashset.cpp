@@ -465,7 +465,8 @@ int lengthOfLongestSubstring(std :: string str) {
 
 //* find missing & repeating val : leetcode 2965
 
-//* main function #42b883 #8229e2
+
+//* main function #06f68a #8229e2 #2ecd85
 int main() {
 
     //~ input size and array
