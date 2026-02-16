@@ -877,6 +877,22 @@ Node* connect(Node* root) {
     return root;
 }
 
+bool isCBT(TreeNode* root, int i, int n) {
+    
+    bool leftCBT;
+    bool rightCBT;
+
+    //^ base case
+    if(root == NULL) return true;
+
+    if(i >= n) return false;
+    else {
+        leftCBT = isCBT(root -> left, 2*i + 1, n);
+        rightCBT = isCBT(root -> right, 2*i + 2, n);
+    }
+    return leftCBT && rightCBT;
+}
+
 int main() {
 
     //~ input preorder sequence
