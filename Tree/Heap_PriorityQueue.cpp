@@ -397,7 +397,49 @@ long long minRopes(std :: vector<long long>& nums) {
     return ans;
 }
 
-//* convert BST to min heap
+//* convert BST to min heap (left < right)
+//? calculate inorder
+void inorder(Node* root, std :: vector<int>& nums) {
+
+    //^ base case
+    if(!root) {
+        return;
+    }
+
+    //~ inorder traversal
+    inorder(root -> left);
+    nums.push_back(root -> data);
+    inorder(root -> right);
+}
+
+Node* buildMinHeapFromSortedArray(std::vector<int>& arr, int& index) {
+    if (index >= arr.size()) {
+        return NULL;
+    }
+
+    //^ create node
+    Node* root = new Node(arr[index]);
+    index++;
+
+    //~ recursive calls
+    root->left = buildMinHeapFromSortedArray(arr, index);
+    root->right = buildMinHeapFromSortedArray(arr, index);
+
+    return root;
+}
+
+Node* BST_toHeap(Node* BST) {
+
+    //^ calculate inorder sequence
+    std :: vector<int> nums;
+    inorder(BST, nums);
+
+    //todo create min heap by preorder
+    int index = 0;
+    Node* newRoot = buildMinHeapFromSortedArray(nums, index);
+
+    return newRoot;
+}
 
 int main() {
 
