@@ -211,6 +211,8 @@ void priorQueue() {
     std :: cout << "\n\n";
 }
 
+//! ----- Leetcode probelems -----
+
 //* kth smallest element (using max heap) 
 int kthSmall(std :: vector<int>& nums, int k) {
 
@@ -287,7 +289,7 @@ public:
     }
 };
 
-//* merge 2 bianry max heaps
+//* merge 2 binary max heaps
 std :: vector<int> mergeHeap(std :: vector<int>& a, std :: vector<int>& b) {
 
     //? merge array
@@ -299,6 +301,35 @@ std :: vector<int> mergeHeap(std :: vector<int>& a, std :: vector<int>& b) {
     heapify(a,true);
 
     return a;
+}
+
+//* is binary tree a heap
+//& class for tree node
+class Node {
+public:
+    //^ data, and adress of left nd right child
+    int data;
+    Node* left;
+    Node* right;
+    Node* next;
+
+    //^ constructor for initialization
+    Node(int val) {
+        data = val;
+        left = right = next = NULL;
+    }
+}
+
+bool isCBT(Node* root, int i, int n) {
+
+    //^ base case
+    if(root == NULL) return true;
+
+    
+}
+bool isHeap(Node* root) {
+
+    if(isCBT() &&)
 }
 
 int main() {
