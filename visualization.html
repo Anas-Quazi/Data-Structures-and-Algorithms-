@@ -1,0 +1,665 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Minimum Ropes Algorithm Visualization</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 2.5em;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 1.1em;
+        }
+
+        .input-display {
+            text-align: center;
+            font-size: 1.3em;
+            margin-bottom: 20px;
+            padding: 15px;
+            background: #f0f4ff;
+            border-radius: 10px;
+            border-left: 5px solid #667eea;
+        }
+
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+
+        button {
+            padding: 12px 30px;
+            font-size: 1.1em;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 600;
+        }
+
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary {
+            background: #48bb78;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #38a169;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(72, 187, 120, 0.4);
+        }
+
+        .btn-reset {
+            background: #f56565;
+            color: white;
+        }
+
+        .btn-reset:hover {
+            background: #e53e3e;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(245, 101, 101, 0.4);
+        }
+
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+
+        .step-info {
+            background: #fff5f5;
+            border-left: 5px solid #f56565;
+            padding: 20px;
+            margin-bottom: 30px;
+            border-radius: 10px;
+            font-size: 1.1em;
+        }
+
+        .step-info h2 {
+            color: #c53030;
+            margin-bottom: 10px;
+        }
+
+        .step-info .operations {
+            margin-top: 15px;
+            padding: 15px;
+            background: white;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+        }
+
+        .operations div {
+            margin: 5px 0;
+            padding: 5px;
+        }
+
+        .highlight {
+            background: #fef5e7;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: bold;
+            color: #d68910;
+        }
+
+        .visualization {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        @media (max-width: 900px) {
+            .visualization {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .heap-container, .array-container {
+            background: #f7fafc;
+            padding: 25px;
+            border-radius: 15px;
+            border: 2px solid #e2e8f0;
+        }
+
+        .heap-container h3, .array-container h3 {
+            text-align: center;
+            color: #2d3748;
+            margin-bottom: 20px;
+            font-size: 1.3em;
+        }
+
+        #heap-tree {
+            min-height: 300px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+        }
+
+        .tree-node {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.4em;
+            font-weight: bold;
+            position: absolute;
+            transition: all 0.5s ease;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .tree-node.highlight-pop {
+            background: linear-gradient(135deg, #f56565 0%, #e53e3e 100%);
+            animation: pulse 0.5s ease-in-out;
+        }
+
+        .tree-node.highlight-push {
+            background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+            animation: pulse 0.5s ease-in-out;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+        }
+
+        .tree-line {
+            position: absolute;
+            background: #cbd5e0;
+            height: 3px;
+            transform-origin: left center;
+            transition: all 0.5s ease;
+        }
+
+        .array-display {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            min-height: 80px;
+            align-items: center;
+        }
+
+        .array-item {
+            width: 70px;
+            height: 70px;
+            background: linear-gradient(135deg, #4299e1 0%, #3182ce 100%);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 12px;
+            font-size: 1.5em;
+            font-weight: bold;
+            box-shadow: 0 4px 10px rgba(66, 153, 225, 0.4);
+            transition: all 0.3s;
+        }
+
+        .array-item:hover {
+            transform: translateY(-5px);
+        }
+
+        .result-container {
+            background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            text-align: center;
+            font-size: 1.5em;
+            font-weight: bold;
+            box-shadow: 0 10px 30px rgba(72, 187, 120, 0.4);
+        }
+
+        .result-container .ans-value {
+            font-size: 2em;
+            margin-top: 10px;
+        }
+
+        .empty-state {
+            color: #a0aec0;
+            font-style: italic;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .code-display {
+            background: #1a202c;
+            color: #e2e8f0;
+            padding: 20px;
+            border-radius: 10px;
+            font-family: 'Courier New', monospace;
+            margin-top: 30px;
+            overflow-x: auto;
+        }
+
+        .code-display pre {
+            margin: 0;
+            line-height: 1.6;
+        }
+
+        .explanation-timeline {
+            margin-top: 30px;
+            padding: 20px;
+            background: #f0fff4;
+            border-radius: 10px;
+            border-left: 5px solid #48bb78;
+        }
+
+        .timeline-item {
+            padding: 10px;
+            margin: 10px 0;
+            background: white;
+            border-radius: 8px;
+            border-left: 3px solid #667eea;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🪢 Minimum Ropes Algorithm</h1>
+        <p class="subtitle">Step-by-Step Visual Dry Run</p>
+
+        <div class="input-display">
+            <strong>Input:</strong> {4, 3, 2, 6}
+        </div>
+
+        <div class="controls">
+            <button class="btn-primary" id="nextBtn" onclick="nextStep()">Next Step ▶</button>
+            <button class="btn-secondary" id="autoBtn" onclick="autoPlay()">Auto Play ⏯</button>
+            <button class="btn-reset" onclick="reset()">Reset 🔄</button>
+        </div>
+
+        <div class="step-info" id="stepInfo">
+            <h2>Step 0: Initial State</h2>
+            <div class="operations">
+                <div>Building min heap from input array {4, 3, 2, 6}</div>
+                <div>ans = <span class="highlight">0</span></div>
+            </div>
+        </div>
+
+        <div class="visualization">
+            <div class="heap-container">
+                <h3>Min Heap (Tree View)</h3>
+                <div id="heap-tree"></div>
+            </div>
+
+            <div class="array-container">
+                <h3>Priority Queue (Array View)</h3>
+                <div class="array-display" id="array-display"></div>
+            </div>
+        </div>
+
+        <div class="result-container">
+            <div>Total Cost (ans)</div>
+            <div class="ans-value" id="ansValue">0</div>
+        </div>
+
+        <div class="explanation-timeline" id="timeline">
+            <h3>Execution Timeline</h3>
+            <div id="timelineContent"></div>
+        </div>
+    </div>
+
+    <script>
+        let currentStep = 0;
+        let autoPlayInterval = null;
+
+        const steps = [
+            {
+                step: 0,
+                title: "Initial State",
+                heap: [2, 3, 4, 6],
+                ans: 0,
+                operations: [
+                    "Building min heap from input array {4, 3, 2, 6}",
+                    "After heapify: [2, 3, 4, 6]",
+                    "ans = 0"
+                ],
+                timeline: "Min heap created with all elements"
+            },
+            {
+                step: 1,
+                title: "Iteration 1 - Pop First Element",
+                heap: [3, 6, 4],
+                ans: 0,
+                operations: [
+                    "n1 = pq.top() = <span class='highlight'>2</span>",
+                    "pq.pop()",
+                    "Heap after pop: [3, 6, 4]"
+                ],
+                highlight: ['pop'],
+                timeline: "Extracted smallest element: 2"
+            },
+            {
+                step: 2,
+                title: "Iteration 1 - Pop Second Element",
+                heap: [4, 6],
+                ans: 0,
+                operations: [
+                    "n1 = 2",
+                    "n2 = pq.top() = <span class='highlight'>3</span>",
+                    "pq.pop()",
+                    "Heap after pop: [4, 6]"
+                ],
+                highlight: ['pop'],
+                timeline: "Extracted second smallest: 3"
+            },
+            {
+                step: 3,
+                title: "Iteration 1 - Combine and Push",
+                heap: [4, 6, 5],
+                ans: 5,
+                operations: [
+                    "sum = 2 + 3 = <span class='highlight'>5</span>",
+                    "ans = 0 + 5 = <span class='highlight'>5</span>",
+                    "pq.push(5)",
+                    "Heap after push: [4, 6, 5]"
+                ],
+                highlight: ['push'],
+                timeline: "Combined ropes (2+3=5), cost added. Total cost: 5"
+            },
+            {
+                step: 4,
+                title: "Iteration 2 - Pop First Element",
+                heap: [5, 6],
+                ans: 5,
+                operations: [
+                    "n1 = pq.top() = <span class='highlight'>4</span>",
+                    "pq.pop()",
+                    "Heap after pop: [5, 6]"
+                ],
+                highlight: ['pop'],
+                timeline: "Extracted smallest element: 4"
+            },
+            {
+                step: 5,
+                title: "Iteration 2 - Pop Second Element",
+                heap: [6],
+                ans: 5,
+                operations: [
+                    "n1 = 4",
+                    "n2 = pq.top() = <span class='highlight'>5</span>",
+                    "pq.pop()",
+                    "Heap after pop: [6]"
+                ],
+                highlight: ['pop'],
+                timeline: "Extracted second smallest: 5"
+            },
+            {
+                step: 6,
+                title: "Iteration 2 - Combine and Push",
+                heap: [6, 9],
+                ans: 14,
+                operations: [
+                    "sum = 4 + 5 = <span class='highlight'>9</span>",
+                    "ans = 5 + 9 = <span class='highlight'>14</span>",
+                    "pq.push(9)",
+                    "Heap after push: [6, 9]"
+                ],
+                highlight: ['push'],
+                timeline: "Combined ropes (4+5=9), cost added. Total cost: 14"
+            },
+            {
+                step: 7,
+                title: "Iteration 3 - Pop First Element",
+                heap: [9],
+                ans: 14,
+                operations: [
+                    "n1 = pq.top() = <span class='highlight'>6</span>",
+                    "pq.pop()",
+                    "Heap after pop: [9]"
+                ],
+                highlight: ['pop'],
+                timeline: "Extracted smallest element: 6"
+            },
+            {
+                step: 8,
+                title: "Iteration 3 - Pop Second Element",
+                heap: [],
+                ans: 14,
+                operations: [
+                    "n1 = 6",
+                    "n2 = pq.top() = <span class='highlight'>9</span>",
+                    "pq.pop()",
+                    "Heap after pop: []"
+                ],
+                highlight: ['pop'],
+                timeline: "Extracted second smallest: 9"
+            },
+            {
+                step: 9,
+                title: "Iteration 3 - Combine and Push",
+                heap: [15],
+                ans: 29,
+                operations: [
+                    "sum = 6 + 9 = <span class='highlight'>15</span>",
+                    "ans = 14 + 15 = <span class='highlight'>29</span>",
+                    "pq.push(15)",
+                    "Heap after push: [15]"
+                ],
+                highlight: ['push'],
+                timeline: "Combined ropes (6+9=15), cost added. Total cost: 29"
+            },
+            {
+                step: 10,
+                title: "Final State",
+                heap: [15],
+                ans: 29,
+                operations: [
+                    "pq.size() = 1, loop exits",
+                    "return ans = <span class='highlight'>29</span>"
+                ],
+                timeline: "Algorithm complete! Minimum cost to connect all ropes: 29"
+            }
+        ];
+
+        function drawHeapTree(heap) {
+            const container = document.getElementById('heap-tree');
+            container.innerHTML = '';
+
+            if (heap.length === 0) {
+                container.innerHTML = '<div class="empty-state">Heap is empty</div>';
+                return;
+            }
+
+            const width = 500;
+            const height = 300;
+            const levelHeight = 80;
+            
+            function drawNode(index, x, y, offset) {
+                if (index >= heap.length) return;
+
+                const node = document.createElement('div');
+                node.className = 'tree-node';
+                node.textContent = heap[index];
+                node.style.left = x + 'px';
+                node.style.top = y + 'px';
+                
+                const currentStepData = steps[currentStep];
+                if (currentStepData.highlight) {
+                    if (currentStepData.highlight.includes('pop') && index === 0) {
+                        node.classList.add('highlight-pop');
+                    } else if (currentStepData.highlight.includes('push') && index === heap.length - 1) {
+                        node.classList.add('highlight-push');
+                    }
+                }
+                
+                container.appendChild(node);
+
+                const leftChild = 2 * index + 1;
+                const rightChild = 2 * index + 2;
+
+                if (leftChild < heap.length) {
+                    const line = document.createElement('div');
+                    line.className = 'tree-line';
+                    const childX = x - offset;
+                    const childY = y + levelHeight;
+                    const length = Math.sqrt(Math.pow(childX - x, 2) + Math.pow(childY - y, 2));
+                    const angle = Math.atan2(childY - y, childX - x) * 180 / Math.PI;
+                    
+                    line.style.left = (x + 30) + 'px';
+                    line.style.top = (y + 30) + 'px';
+                    line.style.width = length + 'px';
+                    line.style.transform = `rotate(${angle}deg)`;
+                    container.appendChild(line);
+                    
+                    drawNode(leftChild, childX, childY, offset / 2);
+                }
+
+                if (rightChild < heap.length) {
+                    const line = document.createElement('div');
+                    line.className = 'tree-line';
+                    const childX = x + offset;
+                    const childY = y + levelHeight;
+                    const length = Math.sqrt(Math.pow(childX - x, 2) + Math.pow(childY - y, 2));
+                    const angle = Math.atan2(childY - y, childX - x) * 180 / Math.PI;
+                    
+                    line.style.left = (x + 30) + 'px';
+                    line.style.top = (y + 30) + 'px';
+                    line.style.width = length + 'px';
+                    line.style.transform = `rotate(${angle}deg)`;
+                    container.appendChild(line);
+                    
+                    drawNode(rightChild, childX, childY, offset / 2);
+                }
+            }
+
+            drawNode(0, width / 2 - 30, 20, 100);
+        }
+
+        function drawArray(heap) {
+            const container = document.getElementById('array-display');
+            container.innerHTML = '';
+
+            if (heap.length === 0) {
+                container.innerHTML = '<div class="empty-state">Queue is empty</div>';
+                return;
+            }
+
+            heap.forEach((val, idx) => {
+                const item = document.createElement('div');
+                item.className = 'array-item';
+                item.textContent = val;
+                container.appendChild(item);
+            });
+        }
+
+        function updateTimeline() {
+            const timelineContent = document.getElementById('timelineContent');
+            timelineContent.innerHTML = '';
+
+            for (let i = 0; i <= currentStep; i++) {
+                const item = document.createElement('div');
+                item.className = 'timeline-item';
+                item.innerHTML = `<strong>Step ${steps[i].step}:</strong> ${steps[i].timeline}`;
+                timelineContent.appendChild(item);
+            }
+        }
+
+        function renderStep() {
+            const stepData = steps[currentStep];
+            
+            document.getElementById('stepInfo').innerHTML = `
+                <h2>Step ${stepData.step}: ${stepData.title}</h2>
+                <div class="operations">
+                    ${stepData.operations.map(op => `<div>${op}</div>`).join('')}
+                </div>
+            `;
+
+            drawHeapTree(stepData.heap);
+            drawArray(stepData.heap);
+            document.getElementById('ansValue').textContent = stepData.ans;
+            updateTimeline();
+
+            document.getElementById('nextBtn').disabled = currentStep >= steps.length - 1;
+        }
+
+        function nextStep() {
+            if (currentStep < steps.length - 1) {
+                currentStep++;
+                renderStep();
+            }
+        }
+
+        function autoPlay() {
+            const btn = document.getElementById('autoBtn');
+            
+            if (autoPlayInterval) {
+                clearInterval(autoPlayInterval);
+                autoPlayInterval = null;
+                btn.textContent = 'Auto Play ⏯';
+            } else {
+                btn.textContent = 'Pause ⏸';
+                autoPlayInterval = setInterval(() => {
+                    if (currentStep < steps.length - 1) {
+                        nextStep();
+                    } else {
+                        clearInterval(autoPlayInterval);
+                        autoPlayInterval = null;
+                        btn.textContent = 'Auto Play ⏯';
+                    }
+                }, 2000);
+            }
+        }
+
+        function reset() {
+            currentStep = 0;
+            if (autoPlayInterval) {
+                clearInterval(autoPlayInterval);
+                autoPlayInterval = null;
+                document.getElementById('autoBtn').textContent = 'Auto Play ⏯';
+            }
+            renderStep();
+        }
+
+        // Initial render
+        renderStep();
+    </script>
+</body>
+</html>
