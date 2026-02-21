@@ -471,12 +471,64 @@ int kthSubarray(std :: vector<int>& nums, int k) {
 }
 
 //* relative rank : leetcode 506
-std :: vector<std :: string> rank(std ::vector<int>& score) {
+std :: vector<std :: string> relRank(std ::vector<int>& score) {
 
     std :: vector<std :: string> ans;
 
-    //^ min heap
-    std :: priority_queue<int, std :: vector<int>, std :: greater<int>> p;
+    //^ max heap of pairs
+    std :: priority_queue<std :: pair<int, int>> mxHeap;
+
+    for(int i=0; i<score.size(); i++) {
+        mxHeap.push({score[i], i});
+    }
+
+    //todo fill answer array from heap
+    int rank = 1;
+    while(!mxHeap.empty()) {
+
+        auto [sc, idx] = mxHeap.top(); //~ get score nd index
+        mxHeap.pop();
+
+        if(rank == 1) {
+            ans[idx] = "Gold Medal";
+        }
+        else if(rank == 2) {
+            ans[idx] = "Silver Medal";
+        }
+        else if(rank == 3) {
+            ans[idx] = "Bronze Medal";
+        }
+        else {
+            ans.push_back(std :: to_string(rank));
+        }
+        rank++;
+    }
+    return ans;
+}
+
+//* last stone weight : leetcode 1046
+int stoneWeight(std :: vector<int>& nums) {
+
+    std :: priority_queue<int> mxHeap;
+
+    for(int val : nums) {
+        mxHeap.push(val);
+    }
+
+    while(mxHeap.size() > 1) {
+
+        //^ largest one
+        int n1 = mxHeap.top();
+        mxHeap.pop();
+
+        //^ 2nd largest
+        int n2 = mxHeap.top();
+        mxHeap.pop();
+
+        //todo push n1 - n2 in priority queue
+        mxHeap.push(n1 - n2);
+    }
+    return mxHeap.top();
 }
 
 int main() {
