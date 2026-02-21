@@ -407,9 +407,9 @@ void inorder(Node* root, std :: vector<int>& nums) {
     }
 
     //~ inorder traversal
-    inorder(root -> left);
+    inorder(root -> left, nums);
     nums.push_back(root -> data);
-    inorder(root -> right);
+    inorder(root -> right, nums);
 }
 
 Node* buildMinHeapFromSortedArray(std::vector<int>& arr, int& index) {
@@ -441,7 +441,43 @@ Node* BST_toHeap(Node* BST) {
     return newRoot;
 }
 
+//* kth largest subarray sum
+int kthSubarray(std :: vector<int>& nums, int k) {
 
+    //^ create min heap
+    std :: priority_queue<int,std :: vector<int>, std :: greater<int>> hp;
+
+    //todo traverse array
+    for(int i=0; i<nums.size(); i++) {
+
+        int sum = 0;
+        for(int j=i; j<nums.size(); j++) {
+
+            sum += nums[j];
+            if(hp.size() < k) {
+                hp.push(sum);
+            }
+            else {
+
+                //? is sum greater
+                if(sum > hp.top()) {
+                    hp.pop();
+                    hp.push(sum);
+                }
+            }
+        }
+    }
+    return hp.top();
+}
+
+//* relative rank : leetcode 506
+std :: vector<std :: string> rank(std ::vector<int>& score) {
+
+    std :: vector<std :: string> ans;
+
+    //^ min heap
+    std :: priority_queue<int, std :: vector<int>, std :: greater<int>> p;
+}
 
 int main() {
 
