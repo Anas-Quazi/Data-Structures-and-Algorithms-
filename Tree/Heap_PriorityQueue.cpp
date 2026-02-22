@@ -531,6 +531,11 @@ int stoneWeight(std :: vector<int>& nums) {
     return mxHeap.top();
 }
 
+//* merge k sorted arrays
+std :: vector<int> mergeArray(std :: vector<std :: vector<int>>& kArray) {
+    
+}
+
 int main() {
 
     Heap h;
