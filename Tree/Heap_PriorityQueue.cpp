@@ -532,8 +532,66 @@ int stoneWeight(std :: vector<int>& nums) {
 }
 
 //* merge k sorted arrays
-std :: vector<int> mergeArray(std :: vector<std :: vector<int>>& kArray) {
+class matrix {
+public:
     
+    //~ data, row nd colm
+    int data;
+    int row, col;
+
+    //^ constructor
+    matrix(int data, int row, int col) {
+        this -> data = data;
+        this -> row = row;
+        this -> col = col;
+    }
+};
+
+//& custom comparator
+class compare {
+public:
+    
+    bool operator() (matrix* a, matrix* b) {
+        return a -> data > b -> data;
+    }
+};
+
+std :: vector<int> mergeArray(std :: vector<std :: vector<int>>& kArray, int k) {
+
+    //^ create min heap from custom comparator
+    std :: priority_queue<matrix*, std :: vector<matrix*>, comapre> minHeap;
+    
+    //todo push first val of each array into heap
+    for(int i=0; i<k; i++) {
+        
+        //? create a node (matrix class)
+        matrix* temp = new matrix(kArray[i][0], i, 0);
+        minHeap.push(temp);
+    }
+
+    //? answer vector
+    std :: vector<int> ans;
+
+    while(!minHeap.empty()) {
+
+        matrix* temp = minHeap.top();
+
+        //todo push values into vector
+        ans.push_back(temp -> data);
+        minHeap.pop();
+
+        //~ push other elements too (simultenuosly)
+        int row = temp -> row;
+        int col = temp -> col;
+
+        if(col + 1 < kArray[row].size()) {
+
+            //todo create node nd push
+            matrix* next = new matrix(kArray[row][col+1], row, col+1);
+            minHeap.push(next);
+        }
+    }
+    return ans;
 }
 
 int main() {
