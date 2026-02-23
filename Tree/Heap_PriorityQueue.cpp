@@ -559,7 +559,7 @@ public:
 std :: vector<int> mergeArray(std :: vector<std :: vector<int>>& kArray, int k) {
 
     //^ create min heap from custom comparator
-    std :: priority_queue<matrix*, std :: vector<matrix*>, comapre> minHeap;
+    std :: priority_queue<matrix*, std :: vector<matrix*>, compare> minHeap;
     
     //todo push first val of each array into heap
     for(int i=0; i<k; i++) {
@@ -592,6 +592,83 @@ std :: vector<int> mergeArray(std :: vector<std :: vector<int>>& kArray, int k) 
         }
     }
     return ans;
+}
+
+//* merge k sorted lists : leetcode 23
+//& class/ structure for list node
+class ListNode {
+public: 
+
+    int data;
+    ListNode* next;
+
+    //^ constructor (initialize an empty list)
+    ListNode(int val) {
+        data = val;
+        next = NULL;
+    }
+
+};
+class LL {
+    //~ head nd tail pointers
+    ListNode* head;
+    ListNode* tail;
+    
+public:
+
+    //^ constructor
+    LL() {
+        head = tail = NULL; //~ initialize head nd tail as NULL
+    }
+};
+//? custom comparator
+class compareLL {
+public:
+    bool operator() (ListNode* a, ListNode* b) {
+        return a -> data > b -> data;
+    }
+};
+
+ListNode* mergeK_lists(std :: vector<ListNode*>& lists) {
+
+    //^ create min heap
+    std :: priority_queue<ListNode*, std :: vector<ListNode*>, compareLL> minHeap;
+
+    int k = lists.size();
+    if(k == 0) return NULL;
+
+    //todo push head of each LL into heap
+    for(int i=0; i<k; i++) {
+        if(lists[i] != NULL) {
+            minHeap.push(lists[i]);
+        }
+    }
+
+    ListNode* head = NULL;
+    ListNode* tail = NULL;
+
+    //^ insert in answer linked list 
+    while(!minHeap.empty()) {
+
+        //? create a node
+        ListNode* top = minHeap.top();
+        minHeap.pop();
+
+        if(top -> next != NULL) {
+            minHeap.push(top -> next);
+        }
+
+        //~ insert in empty LL
+        if(head == NULL) {
+            head = tail = top;
+            minHeap.pop();
+        }
+        else {
+            tail -> next = top;
+            tail = top;
+        }
+    }
+    return head;
 }
 
 int main() {
