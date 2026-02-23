@@ -671,6 +671,58 @@ ListNode* mergeK_lists(std :: vector<ListNode*>& lists) {
     return head;
 }
 
+class Twitter {
+public:
+
+    int timestamp;  // Global counter for tweet order
+    
+    // Map: userId -> list of {timestamp, tweetId}
+    std :: unordered_map<int, vector<pair<int, int>>> tweets;
+    
+    // Map: userId -> set of followees
+    std :: unordered_map<int, unordered_set<int>> following;
+    
+    Twitter() {
+        timestamp = 0;
+    }
+    
+    void postTweet(int userId, int tweetId) {
+        tweets[userId].push_back({timestamp++, tweetId});
+    }
+    
+    vector<int> getNewsFeed(int userId) {
+        
+        priority_queue<pair<int, int>> maxHeap;  // {timestamp, tweetId}
+
+        for(auto& tweet : tweets[userId]) {
+           maxHeap.push(tweet);
+        }
+
+        for(int followeeId : following[userId]) {
+            for(auto& tweet : tweets[followeeId]) {
+                maxHeap.push(tweet);
+            }
+        }
+
+        // Get top 10 most recent
+        std :: vector<int> feed;
+        for(int i = 0; i < 10 && !maxHeap.empty(); i++) {
+            feed.push_back(maxHeap.top().second);
+            maxHeap.pop();
+        }
+        
+        return feed;
+    }
+    
+    void follow(int followerId, int followeeId) {
+        following[followerId].insert(followeeId);
+    }
+    
+    void unfollow(int followerId, int followeeId) {
+        following[followerId].erase(followeeId);
+    }
+};
+
 int main() {
 
     Heap h;
