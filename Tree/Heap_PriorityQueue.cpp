@@ -745,6 +745,7 @@ int mintime(std :: vector<int>& amount) {
         int c1 = maxHeap.top();
         maxHeap.pop();
 
+        //? second... (if exist)
         int c2 = 0;
         if(!maxHeap.empty()) {
             c2 = maxHeap.top();
@@ -769,6 +770,7 @@ int mintime(std :: vector<int>& amount) {
 //* k weakest row in matrix : leetcode : 1337
 std :: vector<int> kWeakestRows(std :: vector<std :: vector<int>>& mat, int k) {
         
+    //^ vector of pairs
     std :: vector<std :: pair<int, int>> soldier;
     for(int i=0; i<mat.size(); i++) {
         int n = 0;
@@ -777,6 +779,7 @@ std :: vector<int> kWeakestRows(std :: vector<std :: vector<int>>& mat, int k) {
                 n++;
             }
         }
+        //? push soldiers + row no.
         soldier.push_back({n, i});
     }
 
