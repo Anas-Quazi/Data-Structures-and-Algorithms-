@@ -3,7 +3,8 @@
 #include <iostream>
 #include <vector>
 #include <queue> //~ inclue priority queue header file
-
+#include <unordered_map>
+#include <unordered_set>
 
 //? class for implementing heap (by default max heap, but we can change)
 class Heap {
@@ -671,17 +672,19 @@ ListNode* mergeK_lists(std :: vector<ListNode*>& lists) {
     return head;
 }
 
+//* design mini twitter : leetcode 355
 class Twitter {
 public:
 
-    int timestamp;  // Global counter for tweet order
+    int timestamp;  //~ global counter for tweet order
     
-    // Map: userId -> list of {timestamp, tweetId}
-    std :: unordered_map<int, vector<pair<int, int>>> tweets;
+    //^ hashMap: userId -> list of {timestamp, tweetId}
+    std :: unordered_map<int, std :: vector<std :: pair<int, int>>> tweets;
     
-    // Map: userId -> set of followees
-    std :: unordered_map<int, unordered_set<int>> following;
+    //^ hashMap: userId -> set of followees
+    std :: unordered_map<int, std :: unordered_set<int>> following;
     
+    //^ constructor
     Twitter() {
         timestamp = 0;
     }
@@ -690,9 +693,9 @@ public:
         tweets[userId].push_back({timestamp++, tweetId});
     }
     
-    vector<int> getNewsFeed(int userId) {
+    std :: vector<int> getNewsFeed(int userId) {
         
-        priority_queue<pair<int, int>> maxHeap;  // {timestamp, tweetId}
+        std :: priority_queue<std :: pair<int, int>> maxHeap;  //~ heap for {timestamp, tweetId}
 
         for(auto& tweet : tweets[userId]) {
            maxHeap.push(tweet);
@@ -704,7 +707,7 @@ public:
             }
         }
 
-        // Get top 10 most recent
+        //todo Get top 10 most recent
         std :: vector<int> feed;
         for(int i = 0; i < 10 && !maxHeap.empty(); i++) {
             feed.push_back(maxHeap.top().second);
