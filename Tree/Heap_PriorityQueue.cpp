@@ -726,6 +726,76 @@ public:
     }
 };
 
+//* min time to fill cups : leetcode 2335
+int mintime(std :: vector<int>& amount) {
+
+    //^ create priority queue
+    std :: priority_queue<int> maxHeap;
+    for(int val : amount) {
+        if(val > 0) {
+            maxHeap.push(val);
+        }
+    }
+
+    int time = 0;
+    //todo pop two largest from heap and push amount[i]-1
+    while(!maxHeap.empty()) {
+
+        //? two largest
+        int c1 = maxHeap.top();
+        maxHeap.pop();
+
+        int c2 = 0;
+        if(!maxHeap.empty()) {
+            c2 = maxHeap.top();
+            maxHeap.pop();
+        }
+
+        c1--;
+        c2--;
+
+        if(c1 > 0) {
+            maxHeap.push(c1);
+        }
+        if(c2 > 0) {
+            maxHeap.push(c2);
+        } 
+        time++;
+    }
+
+    return time;   
+}
+
+//* k weakest row in matrix : leetcode : 1337
+std :: vector<int> kWeakestRows(std :: vector<std :: vector<int>>& mat, int k) {
+        
+    std :: vector<std :: pair<int, int>> soldier;
+    for(int i=0; i<mat.size(); i++) {
+        int n = 0;
+        for(int j=0; j<mat[0].size(); j++) {
+            if(mat[i][j] == 1) {
+                n++;
+            }
+        }
+        soldier.push_back({n, i});
+    }
+
+    std :: priority_queue<std :: pair<int, int>, std :: vector<std :: pair<int, int>>, std :: greater<std :: pair<int, int>>> heap;
+
+    for(auto val : soldier) {
+        heap.push({val.first, val.second});
+    }
+
+    std :: vector<int> ans;
+
+    while(ans.size() < k) {
+        ans.push_back(heap.top().second);
+        heap.pop();
+    }
+
+    return ans;
+}
+
 int main() {
 
     Heap h;
