@@ -3,24 +3,31 @@
 #include <iostream>
 #include <vector>
 #include <list>
+#include <unordered_map>
 
 //& implement Graph using c++ stl list
 class Graph {
 
-    //^ no. of vertices & neighbours
-    int V;
-    std :: list<int> *adjList; //~ create a dynammic array (int* arr syntax)
+    //^ hashmap for tarcking vertices + neighbours 
+    std :: unordered_map<int, std :: list<int>> adjList;
 
 public:
     //^ constructor
-    Graph(int V) {
-        //todo initialize v and list array
-        this -> V = V;
-        adjList = new std :: list<int> [V]; //~ arr = new int[V] syntax
+    Graph(std :: vector<int> vertices) {
+        for (int v : vertices) {
+            adjList[v] = std :: list<int>();
+        }
     }
 
     //? add edge (establish link between two nodes)
     void addEdge(int u, int v) {
+
+        //& if one of edge didn't exist
+        if (adjList.find(u) == adjList.end() || adjList.find(v) == adjList.end()) {
+            std :: cout << "One or both vertices don't exist\n";
+            return;
+        }
+
         adjList[u].push_back(v);
         adjList[v].push_back(u);
     }
@@ -28,6 +35,8 @@ public:
     //? check for connection
     bool isEdge(int u, int v) {
         
+        if (adjList.find(u) == adjList.end()) return false;
+
         for(int neigh : adjList[u]) {
             if(neigh == v) {
                 return true;
@@ -42,57 +51,53 @@ public:
         if(isEdge(u,v)) {
             adjList[u].remove(v);
             adjList[v].remove(u);
+            return;
         }
+        std :: cout << "Edge didn't exist\n";
     }
 
     //? add vertex to graph
     void addVertex(int v) {
         
-        //^ create new array with one extra slot
-        std ::list<int> *newAdjList = new std ::list<int>[V + 1];
-
-        //todo copy old lists into new array
-        for (int i = 0; i < V; i++) {
-            newAdjList[i] = adjList[i];
+        if (adjList.find(v) != adjList.end()) {
+            std :: cout << "Vertex already exists\n";
+            return;
         }
-        newAdjList[V] = std::list<int>({v});
-
-        //& change to actual list
-        delete[] adjList;
-        adjList = newAdjList;
-        V++;
+        adjList[v] = std :: list<int>();
     }
 
     //? remove vertex
     void removeVertex(int v) {
         
-        //^ clear this vertex's adjacency list
-        adjList[v].clear();
-
-        //todo remove v from all other vertices' lists
-        for (int i = 0; i < V; i++) {
-            adjList[i].remove(v);
+        if (adjList.find(v) == adjList.end()) {
+            std::cout << "Vertex doesn't exist\n";
+            return;
         }
-        V--;
+
+        //todo remove v from all other adjacency lists
+        for (auto& [vertex, neighbors] : adjList) {
+            neighbors.remove(v);
+        }
+
+        adjList.erase(v);
     }
 
     //? print adjacency list
     void printAdjList() {
 
-        for(int i=0; i<V; i++) {
-            std :: cout << i << " : ";
-            for(int neigh : adjList[i]) {
-                std :: cout << neigh << " ";
+        for (auto& [vertex, neighbors] : adjList) {
+            std::cout << vertex << " : ";
+            for (int neigh : neighbors) {
+                std::cout << neigh << " ";
             }
-            std :: cout << std :: endl;
+            std::cout << std::endl;     
         }
     }
-    
 };
 
 int main() {
 
-    Graph g(5);
+    Graph g({0, 1,2, 3, 8});
 
     g.addEdge(0, 1);
     g.addEdge(1, 2);
@@ -104,8 +109,7 @@ int main() {
     std :: cout << "\n\n";
 
     g.addVertex(16);
-    g.addEdge(4, 16);
-    g.addEdge(0, 16);
+    g.addEdge(8, 16);
     
     g.printAdjList();
 
