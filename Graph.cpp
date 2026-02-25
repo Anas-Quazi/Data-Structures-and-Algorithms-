@@ -14,7 +14,7 @@ class Graph {
 public:
     //^ constructor
     Graph(std :: vector<int> vertices) {
-        for (int v : vertices) {
+        for(int v : vertices) {
             adjList[v] = std :: list<int>();
         }
     }
@@ -23,11 +23,12 @@ public:
     void addEdge(int u, int v) {
 
         //& if one of edge didn't exist
-        if (adjList.find(u) == adjList.end() || adjList.find(v) == adjList.end()) {
+        if(adjList.find(u) == adjList.end() || adjList.find(v) == adjList.end()) {
             std :: cout << "One or both vertices don't exist\n";
             return;
         }
 
+        //todo make connection
         adjList[u].push_back(v);
         adjList[v].push_back(u);
     }
@@ -35,7 +36,7 @@ public:
     //? check for connection
     bool isEdge(int u, int v) {
         
-        if (adjList.find(u) == adjList.end()) return false;
+        if(adjList.find(u) == adjList.end()) return false;
 
         for(int neigh : adjList[u]) {
             if(neigh == v) {
@@ -48,6 +49,7 @@ public:
     //? remove edge
     void removeEdge(int u, int v) {
 
+        //todo remove connection (if exist)
         if(isEdge(u,v)) {
             adjList[u].remove(v);
             adjList[v].remove(u);
@@ -59,7 +61,8 @@ public:
     //? add vertex to graph
     void addVertex(int v) {
         
-        if (adjList.find(v) != adjList.end()) {
+        //todo add vertex if not exists
+        if(adjList.find(v) != adjList.end()) {
             std :: cout << "Vertex already exists\n";
             return;
         }
@@ -69,13 +72,13 @@ public:
     //? remove vertex
     void removeVertex(int v) {
         
-        if (adjList.find(v) == adjList.end()) {
+        if(adjList.find(v) == adjList.end()) {
             std::cout << "Vertex doesn't exist\n";
             return;
         }
 
         //todo remove v from all other adjacency lists
-        for (auto& [vertex, neighbors] : adjList) {
+        for(auto& [vertex, neighbors] : adjList) {
             neighbors.remove(v);
         }
 
@@ -110,6 +113,7 @@ int main() {
 
     g.addVertex(16);
     g.addEdge(8, 16);
+    g.addEdge(3, 16);
     
     g.printAdjList();
 
