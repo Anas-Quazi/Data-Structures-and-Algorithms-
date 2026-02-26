@@ -4,6 +4,8 @@
 #include <vector>
 #include <list>
 #include <unordered_map>
+#include <queue>
+#include <unordered_set>
 
 //& implement Graph using c++ stl list
 class Graph {
@@ -88,13 +90,45 @@ public:
     //? print adjacency list
     void printAdjList() {
 
-        for (auto& [vertex, neighbors] : adjList) {
-            std::cout << vertex << " : ";
+        for(auto& [vertex, neighbors] : adjList) {
+            std ::cout << vertex << " : ";
             for (int neigh : neighbors) {
-                std::cout << neigh << " ";
+                std ::cout << neigh << " ";
             }
-            std::cout << std::endl;     
+            std ::cout << std ::endl;     
         }
+        std :: cout << "\n\n";
+    }
+
+    //? size
+    int size() {
+        return adjList.size();
+    }
+
+    //* BFS traversal
+    void BFS() {
+
+        //& use queue and set for tracking neighbours
+        std :: queue<int> q;
+        std :: unordered_set<int> visited;
+
+        //todo push first element
+        q.push(adjList.begin() -> first);
+        visited.insert(adjList.begin() -> first);
+
+        while(!q.empty()) {
+            int u = q.front();
+            q.pop();
+            std :: cout << u << " ";
+
+            for(int v : adjList[u]) {
+                if(!visited.count(v)) {
+                    visited.insert(v);
+                    q.push(v);
+                }
+            }
+        }
+        std :: cout << "\n\n";
     }
 };
 
@@ -117,7 +151,7 @@ int main() {
     
     g.printAdjList();
 
-    std :: cout << "\n" << g.isEdge(1, 4);
+    g.BFS();
 
     return 0;
 }
