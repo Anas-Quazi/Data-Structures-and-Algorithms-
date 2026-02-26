@@ -116,11 +116,14 @@ public:
         q.push(adjList.begin() -> first);
         visited.insert(adjList.begin() -> first);
 
+        //todo print until queue is empty
         while(!q.empty()) {
+            
             int u = q.front();
             q.pop();
             std :: cout << u << " ";
 
+            //^ include all vertices of u 
             for(int v : adjList[u]) {
                 if(!visited.count(v)) {
                     visited.insert(v);
