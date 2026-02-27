@@ -6,6 +6,7 @@
 #include <unordered_map>
 #include <queue>
 #include <unordered_set>
+#include <stack>
 
 //& implement Graph using c++ stl list
 class Graph {
@@ -133,6 +134,61 @@ public:
         }
         std :: cout << "\n\n";
     }
+
+    //* DFS Traversal (recursive)
+    void DFS_Recursive(int u, std :: unordered_set<int>& visited) {
+
+        //todo print u and mark as visited
+        std :: cout << u << " ";
+        visited.insert(u);
+
+        //~ recursive call for neighbours
+        for(int v : adjList[u]) {
+            if(!visited.count(v)) {
+                DFS_Recursive(v, visited);
+            }
+        }
+    }
+
+    void DFS() {
+
+        //! avoid crashing
+        if (adjList.empty()) return;
+
+        int u = adjList.begin() -> first;
+        std :: unordered_set<int> visited;
+
+        DFS_Recursive(u, visited);
+    }
+
+    //* DFS (stack)
+    void DFS_Iterative() {
+
+        //^ stack and set for tracking nodes
+        std :: stack<int> s;
+        std :: unordered_set<int> visited;
+
+        //& push start node
+        s.push(adjList.begin() -> first);
+
+        while(!s.empty()) {
+
+            int u = s.top();
+            s.pop();
+
+            //? check if not visited first
+            if(!visited.count(u)) {
+
+                std :: cout << u << " ";
+                visited.insert(u);
+
+                //todo check for neighbours
+                for(int v : adjList[u]) {
+                    s.push(v);
+                }
+            }
+        }
+    }
 };
 
 int main() {
@@ -155,6 +211,10 @@ int main() {
     g.printAdjList();
 
     g.BFS();
+    std :: cout << "\n";
+    g.DFS();
+    std :: cout << "\n";
+    g.DFS_Iterative();
 
     return 0;
 }
