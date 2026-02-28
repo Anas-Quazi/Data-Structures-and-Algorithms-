@@ -189,6 +189,28 @@ public:
             }
         }
     }
+
+    bool detectCycleDFS(int u, std :: unordered_set<int>& visited, int par) {
+
+        visited.insert(u);
+
+        for(int v : adjList[u]) {
+            if(!visited.count(v)) {
+                if(DFS_Recursive(v, visited, u)) {
+                    return true;
+                }
+            }
+            else if(v != par) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    bool detectCycle() {
+
+    }
 };
 
 int main() {
@@ -211,10 +233,8 @@ int main() {
     g.printAdjList();
 
     g.BFS();
-    std :: cout << "\n";
-    g.DFS();
-    std :: cout << "\n";
-    g.DFS_Iterative();
+
+    std :: cout << g.detectCycle()
 
     return 0;
 }
