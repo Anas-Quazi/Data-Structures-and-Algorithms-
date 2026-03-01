@@ -113,22 +113,22 @@ public:
         std :: queue<int> q;
         std :: unordered_set<int> visited;
 
-        //todo push first element
-        q.push(adjList.begin() -> first);
-        visited.insert(adjList.begin() -> first);
+        for (auto& [vertex, _] : adjList) {
+            if (!visited.count(vertex)) {
+                q.push(vertex);
+                visited.insert(vertex);
 
-        //todo print until queue is empty
-        while(!q.empty()) {
-            
-            int u = q.front();
-            q.pop();
-            std :: cout << u << " ";
+                while (!q.empty()) {
+                    int u = q.front();
+                    q.pop();
+                    std::cout << u << " ";
 
-            //^ include all vertices of u 
-            for(int v : adjList[u]) {
-                if(!visited.count(v)) {
-                    visited.insert(v);
-                    q.push(v);
+                    for (int v : adjList[u]) {
+                        if (!visited.count(v)) {
+                            visited.insert(v);
+                            q.push(v);
+                        }
+                    }
                 }
             }
         }
