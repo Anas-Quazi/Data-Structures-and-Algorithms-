@@ -113,6 +113,7 @@ public:
         std :: queue<int> q;
         std :: unordered_set<int> visited;
 
+        //! visit all starting vertices (disconnected graph)
         for (auto& [vertex, _] : adjList) {
             if (!visited.count(vertex)) {
                 q.push(vertex);
@@ -123,6 +124,7 @@ public:
                     q.pop();
                     std::cout << u << " ";
 
+                    //^ visit all neighbours
                     for (int v : adjList[u]) {
                         if (!visited.count(v)) {
                             visited.insert(v);
@@ -155,10 +157,14 @@ public:
         //! avoid crashing
         if (adjList.empty()) return;
 
-        int u = adjList.begin() -> first;
         std :: unordered_set<int> visited;
 
-        DFS_Recursive(u, visited);
+        //? diffrent starting nodes (disonnected graph)
+        for (auto& [vertex, _] : adjList) {
+            if (!visited.count(vertex)) {
+                DFS_Recursive(vertex, visited);
+            }
+        }
     }
 
     //* DFS (stack)
@@ -168,23 +174,26 @@ public:
         std :: stack<int> s;
         std :: unordered_set<int> visited;
 
-        //& push start node
-        s.push(adjList.begin() -> first);
+        //! first vertex of each disconnected graph
+        for(auto& [vertex, _] : adjList) {
+            if(!visited.count(vertex)) {
+                s.push(vertex);
 
-        while(!s.empty()) {
+                while(!s.empty()) {
+                    int u = s.top();
+                    s.pop();
 
-            int u = s.top();
-            s.pop();
+                    //? check if not visited first
+                    if(!visited.count(u)) {
 
-            //? check if not visited first
-            if(!visited.count(u)) {
+                        std :: cout << u << " ";
+                        visited.insert(u);
 
-                std :: cout << u << " ";
-                visited.insert(u);
-
-                //todo check for neighbours
-                for(int v : adjList[u]) {
-                    s.push(v);
+                        //todo check for neighbours
+                        for(int v : adjList[u]) {
+                            s.push(v);
+                        }
+                    }
                 }
             }
         }
@@ -196,7 +205,7 @@ public:
 
         for(int v : adjList[u]) {
             if(!visited.count(v)) {
-                if(DFS_Recursive(v, visited, u)) {
+                if(detectCycleDFS(v, visited, u)) {
                     return true;
                 }
             }
@@ -210,6 +219,17 @@ public:
 
     bool detectCycle() {
 
+        //^ set for tracking vertices
+        std :: unordered_set<int> visited;
+
+        for(auto& [vertex, _] : adjList) {
+            if(!visited[vertex]) {
+                if(detectCycleDFS(vertex, visited, -1)) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 };
 
