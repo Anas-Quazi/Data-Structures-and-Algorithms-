@@ -260,6 +260,116 @@ public:
 
 };
 
+//* number of islands : leetcode 200 (DFS Algo)
+void totalIslands(int i, int j, std :: vector<std :: vector<bool>>& visited, std :: vector<std :: vector<char>>& grid) {
+
+    int n = grid.size();
+    int m = grid[0].size();
+
+    //^ base case (boundry conditions + already visited + zero vals)
+    if(i < 0 || j < 0 || i >= n || j >= m || visited[i][j] || grid[i][j] != '1') return;
+
+    visited[i][j] = true;
+
+    //todo call DFS (recursively) for all 4 neighbours
+    totalIslands(i-1, j, visited, grid); //~ top
+    totalIslands(i, j+1, visited, grid); //~ right
+    totalIslands(i, j-1, visited, grid); //~ left
+    totalIslands(i+1, j, visited, grid); //~ bottom
+
+}
+
+int numberOfIslands(std :: vector<std :: vector<char>>& grid) {
+
+    //? initialize no. of islands 
+    int islands = 0;
+
+    int n = grid.size();
+    int m = grid[0].size();
+
+    std :: vector<std :: vector<bool>> visited(n, std :: vector<bool>(m, false));
+
+    //todo traverse matrix
+    for(int i=0; i<n; i++) {
+        for(int j=0; j<m; j++) {
+            if(grid[i][j] == '1' && !visited[i][j]) {
+                totalIslands(i, j, visited, grid);
+                islands++;
+            }
+        }
+    }
+
+    return islands;
+}
+
+//* rotting oranges : leetcode 994 (multi source BFS algorithm)
+int rottingOranges(std :: vector<std :: vector<int>>& grid) {
+
+    //? queue of pair of pair for tracking i,j and time
+    std :: queue<std :: pair<std :: pair<int, int>, int>> q;
+    std :: vector<std :: vector<bool>> visited(grid.size(), std :: vector<bool>(grid[0].size(), false));
+
+    for(int i=0; i<grid.size(); i++) {
+        for(int j=0; j<grid[i].size(); j++) {
+            
+            //^ rotten orange
+            if(grid[i][j] == 2) {
+                q.push({{i, j}, 0});
+            }
+        }
+    }
+
+    int ans;
+
+    //& check for rotten oranges (neighbour 1 of 2s) : BFS 
+    while(!q.empty()) {
+
+        int i = q.front().first.first;
+        int j = q.front().first.second;
+        int time = q.front().second;
+        q.pop();
+
+        ans = std :: max(ans, time);
+
+        //^ top neighbour
+        if(i-1 >= 0 && !visited[i-1][j] && grid[i-1][j] == 1) {
+            q.push({{i-1, j}, time+1});
+            visited[i-1][j] = true;
+        }
+
+        //^ right neighbour
+        if(j+1 < grid[0].size() && !visited[i][j+1] && grid[i][j+1] == 1) {
+            q.push({{i, j+1}, time+1});
+            visited[i][j+1] = true;
+        }
+
+        //^ left neighbour
+        if(j-1 >= 0 && !visited[i][j-1] && grid[i][j-1] == 1) {
+            q.push({{i, j-1}, time+1});
+            visited[i][j-1] = true;
+        }
+
+        //^ bottom neighbour
+        if(i+1 < grid.size() && !visited[i+1][j] && grid[i+1][j] == 1) {
+            q.push({{i+1, j}, time+1});
+            visited[i+1][j] = true;
+        }
+    }
+
+    //! check if there's still fresh orange
+    for(int i=0; i<grid.size(); i++) {
+        for(int j=0; j<grid[i].size(); j++) {
+            
+            //^ fresh orange
+            if(grid[i][j] == 1 && !visited[i][j]) {
+                return -1;
+            }
+        }
+    }
+
+    return ans;
+}
+
 int main() {
 
     Graph g({0, 1,2, 3, 8});
@@ -281,7 +391,7 @@ int main() {
 
     g.BFS();
 
-    std :: cout << g.detectCycle()
+    std :: cout << g.detectCycle();
 
     return 0;
 }
