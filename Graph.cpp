@@ -217,20 +217,47 @@ public:
         return false;
     }
 
-    bool detectCycle() {
+    //* detect cycle using BFS
+    bool detectCycleBFS(int src, std :: unordered_set<int>& visited) {
 
-        //^ set for tracking vertices
-        std :: unordered_set<int> visited;
+        std :: queue<std :: pair<int, int>> q;
+        q.push({src, -1});
+        visited.insert(src);
 
-        for(auto& [vertex, _] : adjList) {
-            if(!visited[vertex]) {
-                if(detectCycleDFS(vertex, visited, -1)) {
+        while(!q.empty()) {
+
+            int u = q.front().first;
+            int parU = q.front().second;
+            q.pop();
+
+            for(int v : adjList[u]) {
+                if(!visited.count(v)) {
+                    visited.insert(v);
+                    q.push({v, u});
+                }
+                else if(v != parU) {
                     return true;
                 }
             }
         }
         return false;
     }
+
+    bool detectCycle() {
+
+        //^ set for tracking vertices
+        std :: unordered_set<int> visited;
+
+        for(auto& [vertex, _] : adjList) {
+            if(!visited.count(vertex)) {
+                if(detectCycleBFS(vertex, visited)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
 };
 
 int main() {
