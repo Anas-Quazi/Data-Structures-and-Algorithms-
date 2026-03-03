@@ -36,6 +36,16 @@ public:
         adjList[v].push_back(u);
     }
 
+    //? add edge for directed graph
+    void addEdgeDirected(int u, int v) {
+        
+        if(adjList.find(u) == adjList.end() || adjList.find(v) == adjList.end()) {
+            std :: cout << "One or both vertices don't exist\n";
+            return;
+        }
+        adjList[u].push_back(v);  //~ only u → v
+    }
+
     //? check for connection
     bool isEdge(int u, int v) {
         
@@ -243,19 +253,86 @@ public:
         return false;
     }
 
+    //* detect cycle in directed graph
+    bool detectCycleDirect(int crt, std :: unordered_set<int>& visited, std :: unordered_set<int>& recPath) {
+
+        //^ mark as true
+        visited.insert(crt);
+        recPath.insert(crt);
+
+        for(int v : adjList[crt]) {
+            if(!visited.count(v)) {
+                if(detectCycleDirect(v, visited, recPath)) {
+                    return true;
+                }
+            }
+            else if(recPath.count(v)) {
+                return true;
+            }
+        }
+
+        //& backtrack
+        recPath.erase(crt);
+        return false;
+    }
+
+    //* main function for detecting cycle (BFS + DFS + Directed)
     bool detectCycle() {
 
         //^ set for tracking vertices
         std :: unordered_set<int> visited;
+        std :: unordered_set<int> recPath;
 
+        //todo visit each vertex
         for(auto& [vertex, _] : adjList) {
             if(!visited.count(vertex)) {
-                if(detectCycleBFS(vertex, visited)) {
+                if(detectCycleDirect(vertex, visited, recPath)) {
                     return true;
                 }
             }
         }
         return false;
+    }
+
+    //& topological sort in Graph
+    void topologicalSort(int u, std :: unordered_set<int>& visited, std :: stack<int>& s) {
+
+        visited.insert(u);
+
+        for(int v : adjList[u]) {
+            if(!visited.count(v)) {
+                topologicalSort(v, visited, s);
+            }
+        }
+
+        //^ push neighbor in stack
+        s.push(u);
+    }
+
+    std :: vector<int> topoSort() {
+
+        std :: unordered_set<int> visited;
+        std :: stack<int> s;
+
+        for(auto& [vertex, _] : adjList) {
+            if(!visited.count(vertex)) {
+                topologicalSort(vertex, visited, s);
+            }
+        }
+
+        //todo copy values from stack to array
+        std :: vector<int> ans;
+        while(!s.empty()) {
+            ans.push_back(s.top());
+            s.pop();
+        }
+
+        //~ just verification
+        for(int val : ans) {
+            std :: cout << val << " ";
+        }
+
+        return ans;
     }
 
 };
@@ -387,11 +464,15 @@ int main() {
     g.addEdge(8, 16);
     g.addEdge(3, 16);
     
-    g.printAdjList();
+    Graph directed({0, 1, 2, 3, 4, 5});
+    directed.addEdgeDirected(3, 1);
+    directed.addEdgeDirected(2, 3);
+    directed.addEdgeDirected(4, 0);
+    directed.addEdgeDirected(4, 1);
+    directed.addEdgeDirected(5, 0);
+    directed.addEdgeDirected(5, 3);
 
-    g.BFS();
-
-    std :: cout << g.detectCycle();
+    directed.topoSort();
 
     return 0;
 }
