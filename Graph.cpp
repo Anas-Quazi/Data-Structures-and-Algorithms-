@@ -335,6 +335,24 @@ public:
         return ans;
     }
 
+    //* course schedule : leetcode 207
+    bool courseSchedule(int scr, std :: unordered_set<int>& visited, std :: unordered_set<int>& recPath, std :: vector<std :: vector<int>& edge) {
+
+        //^ mark vertex as visited and recursion path
+        
+    }
+
+    bool courseScheduleMain(std :: vector<std :: vector<int>>& prerequisites, int numCourse) {
+
+        //? visited and recursion path
+        std :: unordered_set<int> visited;
+        std :: unordered_set<int> recPath;
+        
+        //^ return false for cyclic graph
+        if(detectCycleDirect()) {
+            return false;
+        }
+    }
 };
 
 //* number of islands : leetcode 200 (DFS Algo)
