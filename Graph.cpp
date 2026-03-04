@@ -335,24 +335,6 @@ public:
         return ans;
     }
 
-    //* course schedule : leetcode 207
-    bool courseSchedule(int scr, std :: unordered_set<int>& visited, std :: unordered_set<int>& recPath, std :: vector<std :: vector<int>& edge) {
-
-        //^ mark vertex as visited and recursion path
-        
-    }
-
-    bool courseScheduleMain(std :: vector<std :: vector<int>>& prerequisites, int numCourse) {
-
-        //? visited and recursion path
-        std :: unordered_set<int> visited;
-        std :: unordered_set<int> recPath;
-        
-        //^ return false for cyclic graph
-        if(detectCycleDirect()) {
-            return false;
-        }
-    }
 };
 
 //* number of islands : leetcode 200 (DFS Algo)
@@ -463,6 +445,134 @@ int rottingOranges(std :: vector<std :: vector<int>>& grid) {
     }
 
     return ans;
+}
+
+//* course schedule : leetcode 207
+bool courseScheduleCycle(int src, std :: unordered_set<int>& visited, std :: unordered_set<int>& recPath, std :: vector<std :: vector<int>>& edge) {
+
+    //^ mark vertex as visited and recursion path
+    visited.insert(src);
+    recPath.insert(src);
+
+    for(int i=0; i<edge.size(); i++) {
+
+        //& prerequistites
+        int v = edge[i][0];
+        int u = edge[i][1];
+
+        //todo check for neighbours (if u is source)
+        if(u == src) {
+            if(!visited.count(v)) {
+                if(courseScheduleCycle(v, visited, recPath, edge)) {
+                    return true;
+                }
+            }
+            else if(recPath.count(v)) {
+                return true;
+            }
+        }
+    }
+    recPath.erase(src);
+    return false;
+}
+
+bool courseSchedule(std :: vector<std :: vector<int>>& prerequisites, int numCourse) {
+
+    //? visited and recursion path
+    std :: unordered_set<int> visited;
+    std :: unordered_set<int> recPath;
+    
+    for(int i=0; i<numCourse; i++) {
+        if(!visited.count(i)) {
+            if(courseScheduleCycle(i, visited, recPath, prerequisites)) {
+                //! return false if cycle exist 
+                return false;
+            }
+        }
+    }
+    return true;
+}
+
+//* course schedule II : leetcode 210
+void topoOrder(int src, std :: stack<int>& s,std :: unordered_set<int>& visited, std :: vector<std :: vector<int>>& edge) {
+
+    visited.insert(src);
+
+    for(int i=0; i<edge.size(); i++) {
+                
+        int v = edge[i][0];
+        int u = edge[i][1];
+
+        //todo check for neighbours (if u is source)
+        if(u == src) {
+            if(!visited.count(v)) {
+                topoOrder(v, s, visited, edge);
+            }
+        }
+    }
+
+    s.push(src);
+}
+
+std :: vector<int> courseScheduleII(std :: vector<std :: vector<int>>& preReq, int n) {
+        
+    //? visited and recursion path
+    std :: unordered_set<int> visited;
+    std :: unordered_set<int> recPath;
+    std :: vector<int> ans;
+    
+    for(int i=0; i<n; i++) {
+        if(!visited.count(i)) {
+            if(courseScheduleCycle(i, visited, recPath, preReq)) {
+                //^ schedule not possible
+                return ans;
+            }
+        }
+    }
+    
+    //todo perform topological sort
+    std :: stack<int> s;
+    visited.clear(); //~ clear set
+
+    for(int i=0; i< n; i++) {
+        if(!visited.count(i)) {
+            topoOrder(i, s, visited, preReq);
+        }
+    }
+
+    //& extract order from dtack to array
+    while(!s.empty()) {
+        ans.push_back(s.top());
+        s.pop();
+    }
+
+    return ans;
+}
+
+//* flood fills algorithm : leetcode 733
+void floofFillHelper(std :: vector<std :: vector<int>>& image, int i, int j, int newColour, int origColour) {
+
+    //^ base cases
+    if(i < 0 || j < 0 || i >= image.size() || j >= image[0].size() ||
+        image[i][j] != origColour || image[i][j] == newColour) {
+            return;
+    }
+
+    image[i][j] = newColour;
+
+    //& recursive calls
+    floofFillHelper(image, i-1, j, newColour, origColour); //~ top
+    floofFillHelper(image, i, j+1, newColour, origColour); //~ right
+    floofFillHelper(image, i+1, j, newColour, origColour); //~ bottom
+    floofFillHelper(image, i, j-1, newColour, origColour); //~ left
+
+}
+
+std :: vector<std :: vector<int>> floodFill(std :: vector<std :: vector<int>>& image, int sc, int sr, int colour) {
+
+    floofFillHelper(image, sr, sc, colour, image[sr][sc]);
+
+    return image;
 }
 
 int main() {
