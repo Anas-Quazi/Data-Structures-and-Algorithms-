@@ -335,6 +335,54 @@ public:
         return ans;
     }
 
+    //& topological sort (BFS) : Kahn's algorithm
+    std :: vector<int> topoSortBFS() {
+
+        //^ indegree of all vertices
+        std :: vector<int> inDeg(adjList.size(), 0);
+
+        //? update indegrees
+        for(int u=0; u<adjList.size(); u++) {
+            for(int v : adjList[u]) {
+                inDeg[v]++;
+            }
+        }
+
+        std :: vector<int> ans;
+        //todo push 0 indegree node into queue
+        std :: queue<int> q;
+        for(auto& [vertex, _] : adjList) {
+            if(inDeg[vertex] == 0) {
+                q.push(vertex);
+            }
+        }
+
+        //~ repeat for others
+        while(!q.empty()) {
+
+            int crt = q.front();
+            q.pop();
+            ans.push_back(crt);
+
+            //^ decrease indegree of neighbors of crt
+            for(int v : adjList[crt]) {
+                inDeg[v]--;
+
+                //? push neighbor with indegree 0
+                if(inDeg[v] == 0) {
+                    q.push(v);
+                }
+            }
+        }
+
+        for(int val : ans) {
+            std :: cout << val << " ";
+        }
+        std :: cout << "\n";
+
+        std :: vector<int> notExist({0});
+        return ans.size() == adjList.size() ? ans : notExist;
+    }
 };
 
 //* number of islands : leetcode 200 (DFS Algo)
