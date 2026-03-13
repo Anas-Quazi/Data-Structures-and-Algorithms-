@@ -339,12 +339,14 @@ public:
     std :: vector<int> topoSortBFS() {
 
         //^ indegree of all vertices
-        std :: vector<int> inDeg(adjList.size(), 0);
+        std::unordered_map<int, int> inDegree;
 
-        //? update indegrees
-        for(int u=0; u<adjList.size(); u++) {
-            for(int v : adjList[u]) {
-                inDeg[v]++;
+        //? calculate indegrees
+        for (auto& [u, neighbors] : adjList) {
+         
+            if (!inDegree.count(u)) inDegree[u] = 0;  
+            for (int v : neighbors) {
+                inDegree[v]++;
             }
         }
 
@@ -352,7 +354,7 @@ public:
         //todo push 0 indegree node into queue
         std :: queue<int> q;
         for(auto& [vertex, _] : adjList) {
-            if(inDeg[vertex] == 0) {
+            if(inDegree[vertex] == 0) {
                 q.push(vertex);
             }
         }
@@ -366,10 +368,10 @@ public:
 
             //^ decrease indegree of neighbors of crt
             for(int v : adjList[crt]) {
-                inDeg[v]--;
+                inDegree[v]--;
 
                 //? push neighbor with indegree 0
-                if(inDeg[v] == 0) {
+                if(inDegree[v] == 0) {
                     q.push(v);
                 }
             }
@@ -380,8 +382,7 @@ public:
         }
         std :: cout << "\n";
 
-        std :: vector<int> notExist({0});
-        return ans.size() == adjList.size() ? ans : notExist;
+        return ans.size() == adjList.size() ? ans : std::vector<int>{};
     }
 };
 
@@ -648,7 +649,7 @@ int main() {
     directed.addEdgeDirected(5, 0);
     directed.addEdgeDirected(5, 3);
 
-    directed.topoSort();
+    directed.topoSortBFS();
 
     return 0;
 }
