@@ -436,6 +436,52 @@ public:
             std :: cout << std :: endl;
         }
     }
+
+    //& --- shortest path algorithms
+    //* dijkstra's algorithm 
+    std :: unordered_map<int, int> dijkstraAlgo() {
+
+        //? distance hashmap
+        std :: unordered_map<int, int> dist;
+        for(auto& [vertex, _] : adjlist) {
+            dist[vertex] = INT_MAX;
+        }
+
+        //^ min heap of pairs for min distance and vertex 
+        std :: priority_queue<std :: pair<int, int>, std :: vector<std :: pair<int, int>>, std :: greater<std :: pair<int, int>>> pq; 
+
+        //~ source vertex
+        int src;
+        std :: cout << "enter source vertex : ";
+        std :: cin >> src;
+
+        dist[src] = 0;
+        pq.push({0, src});
+
+        //todo BFS traverse to each vertex from source node
+        while(!pq.empty()) {
+
+            //^ extract uth node for its neighbors
+            int u = pq.top().second;
+            pq.pop();
+
+            for(auto& [v, w] : adjlist[u]) {
+                //~ edge relaxation
+                if(dist[v] > dist[u] + w) {
+                    dist[v] = dist[u] + w;
+                    pq.push({dist[v], v});
+                }
+            }
+        }
+
+        //~ verification
+        for(auto& [vertex, distance] : dist) {
+            std :: cout << vertex << " : " << distance << "\n";
+        }
+        std :: cout << "\n";
+
+        return dist;
+    }
 };
 
 //! ---------------- leetcode problems ---------------------- 
@@ -713,6 +759,7 @@ int main() {
     wg.addEdgeDirected(4, 5, 5);
 
     wg.printAdjList();
+    wg.dijkstraAlgo();
 
     return 0;
 }
