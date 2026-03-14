@@ -386,6 +386,59 @@ public:
     }
 };
 
+//& implementation of weighted graph (directed + undirected)
+class WieghtedGraph {
+
+    //^ map of int and pair for neighbour + weight
+    std :: unordered_map<int, std :: list<std :: pair<int, int>>> adjlist;
+
+public:
+    //^ constructor
+    WieghtedGraph(std :: vector<int> vertices) {
+
+        //todo initialize graph
+        for(int v : vertices) {
+            adjlist[v] = std :: list<std :: pair<int, int>>();
+        }
+    }
+
+    //? add edge (undirected)
+    void addEdge(int u, int v, int w) {
+
+        if(adjlist.find(u) == adjlist.end() || adjlist.find(v) == adjlist.end()) {
+            std :: cout << "one of the vertices doesn't exist! \n";
+            return;
+        }
+
+        //~ make connection
+        adjlist[u].push_back({v, w});
+        adjlist[v].push_back({u, w});
+    }
+
+    //? add edge (directed)
+    void addEdgeDirected(int u, int v, int w) {
+
+        if(adjlist.find(u) == adjlist.end() || adjlist.find(v) == adjlist.end()) {
+            std :: cout << "one of the vertices doesn't exist! \n";
+            return;
+        }
+
+        //~ make connection
+        adjlist[u].push_back({v, w}); //* only one sided connection
+    }
+
+    //? print list
+    void printAdjList() {
+        for(auto& [vertex, neighbors] : adjlist) {
+            std :: cout << vertex << " : ";
+            for(auto& [neigh, weight] : neighbors)
+                std :: cout << "(" << neigh << "," << weight << ") ";
+            std :: cout << std :: endl;
+        }
+    }
+};
+
+//! ---------------- leetcode problems ---------------------- 
 //* number of islands : leetcode 200 (DFS Algo)
 void totalIslands(int i, int j, std :: vector<std :: vector<bool>>& visited, std :: vector<std :: vector<char>>& grid) {
 
@@ -649,7 +702,17 @@ int main() {
     directed.addEdgeDirected(5, 0);
     directed.addEdgeDirected(5, 3);
 
-    directed.topoSortBFS();
+    WieghtedGraph wg({0, 1, 2, 3, 4, 5});
+    wg.addEdgeDirected(0, 1, 2);
+    wg.addEdgeDirected(0, 2, 4);
+    wg.addEdgeDirected(1, 2, 1);
+    wg.addEdgeDirected(1, 3, 7);
+    wg.addEdgeDirected(2, 4, 3);
+    wg.addEdgeDirected(3, 5, 1);
+    wg.addEdgeDirected(4, 3, 2);
+    wg.addEdgeDirected(4, 5, 5);
+
+    wg.printAdjList();
 
     return 0;
 }
