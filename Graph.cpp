@@ -482,6 +482,43 @@ public:
 
         return dist;
     }
+
+    //* bellman ford algorithm
+    std :: unordered_map<int, int> bellmanFordAlgo() {
+
+        //? distance hashmap
+        std :: unordered_map<int, int> dist;
+        for(auto& [vertex, _] : adjlist) {
+            dist[vertex] = INT_MAX;
+        }
+
+        //~ source vertex
+        int src;
+        std :: cout << "enter source vertex : ";
+        std :: cin >> src;
+
+        dist[src] = 0;
+
+        //todo relax for V-1 times
+        for(int i=0; i<adjlist.size()-1; i++) {
+            for(auto& [u, neighbors] : adjlist) {
+                for(auto& [v, w] : neighbors) {
+                    //~ relaxation
+                    if(dist[u] != INT_MAX && dist[v] > dist[u] + w) {
+                        dist[v] = dist[u] + w;
+                    }
+                }
+            }
+        }
+
+        //~ verification
+        for(auto& [vertex, distance] : dist) {
+            std :: cout << vertex << " : " << distance << "\n";
+        }
+        std :: cout << "\n";
+
+        return dist;        
+    }
 };
 
 //! ---------------- leetcode problems ---------------------- 
