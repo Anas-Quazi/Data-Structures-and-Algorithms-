@@ -7,6 +7,7 @@
 #include <queue>
 #include <unordered_set>
 #include <stack>
+#include <algorithm>
 
 //& implement Graph using c++ stl list
 class Graph {
@@ -438,6 +439,39 @@ public:
     }
 
     //& --- shortest path algorithms
+    void printAllPaths(std :: unordered_map<int, int>& parent, std :: unordered_map<int, int>& dist, int src) {
+
+        for(auto& [vertex, distance] : dist) {
+
+            std::cout << src << " -> " << vertex << " : ";
+
+            if(vertex == src) {
+                std :: cout << src << " (distance: 0)\n";
+                continue;
+            }
+            if(distance == INT_MAX) {
+                std :: cout << "unreachable\n";
+                continue;
+            }
+
+            //^ traceback
+            std :: vector<int> path;
+            int curr = vertex;
+            while(curr != src) {
+                path.push_back(curr);
+                curr = parent[curr];
+            }
+            path.push_back(src);
+
+            std :: reverse(path.begin(), path.end());
+            for(int i = 0; i < path.size(); i++) {
+                if(i) std::cout << " -> ";
+                std :: cout << path[i];
+            }
+            std :: cout << " (distance: " << distance << ")\n";
+        }
+    }
+
     //* dijkstra's algorithm 
     std :: unordered_map<int, int> dijkstraAlgo() {
 
@@ -452,11 +486,14 @@ public:
 
         //~ source vertex
         int src;
-        std :: cout << "enter source vertex : ";
+        std :: cout << "\n\nenter source vertex : ";
+        std :: cout << "\n";
         std :: cin >> src;
 
         dist[src] = 0;
         pq.push({0, src});
+
+        std::unordered_map<int, int> parent; //? for tracking path
 
         //todo BFS traverse to each vertex from source node
         while(!pq.empty()) {
@@ -469,15 +506,14 @@ public:
                 //~ edge relaxation
                 if(dist[v] > dist[u] + w) {
                     dist[v] = dist[u] + w;
+                    parent[v] = u;
                     pq.push({dist[v], v});
                 }
             }
         }
 
         //~ verification
-        for(auto& [vertex, distance] : dist) {
-            std :: cout << vertex << " : " << distance << "\n";
-        }
+        printAllPaths(parent, dist, src);
         std :: cout << "\n";
 
         return dist;
@@ -498,7 +534,8 @@ public:
         std :: cin >> src;
 
         dist[src] = 0;
-
+        std::unordered_map<int, int> parent; //? for tracking path
+        
         //todo relax for V-1 times
         for(int i=0; i<adjlist.size()-1; i++) {
             for(auto& [u, neighbors] : adjlist) {
@@ -506,15 +543,14 @@ public:
                     //~ relaxation
                     if(dist[u] != INT_MAX && dist[v] > dist[u] + w) {
                         dist[v] = dist[u] + w;
+                        parent[v] = u;
                     }
                 }
             }
         }
 
         //~ verification
-        for(auto& [vertex, distance] : dist) {
-            std :: cout << vertex << " : " << distance << "\n";
-        }
+        printAllPaths(parent, dist, src);
         std :: cout << "\n";
 
         return dist;        
@@ -796,7 +832,7 @@ int main() {
     wg.addEdgeDirected(4, 5, 5);
 
     wg.printAdjList();
-    wg.dijkstraAlgo();
+    wg.bellmanFordAlgo();
 
     return 0;
 }
