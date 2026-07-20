@@ -117,7 +117,7 @@ public:
         return adjList.size();
     }
 
-    //* BFS traversal
+    //* BFS traversal (Time complexity = O(V+E))
     void BFS() {
 
         //& use queue and set for tracking neighbours
@@ -178,7 +178,7 @@ public:
         }
     }
 
-    //* DFS (stack)
+    //* DFS (stack) (O(V+E))
     void DFS_Iterative() {
 
         //^ stack and set for tracking nodes
@@ -555,9 +555,46 @@ public:
 
         return dist;        
     }
+
+    //& minimun spanning tree algorithms
+    int primsMST() {
+
+        //^ min heap {weight, vertex} and set for MST set
+        std::unordered_set<int> mstSet;
+        std :: priority_queue<std :: pair<int, int>, std :: vector<std :: pair<int, int>>, std :: greater<std :: pair<int, int>>> pq;
+
+        int minCost = 0;
+        
+        int src;
+        std::cout << "enter source vertex : ";
+        std::cin >> src;
+        pq.push({0, src});
+
+        while(!pq.empty()) {
+
+            auto [wt, u] = pq.top();
+            pq.pop();
+
+            //? if not visited
+            if(!mstSet.count(u)) {
+                mstSet.insert(u);
+                minCost += wt;
+
+                for(auto& [v, w] : adjlist[u]) {
+                    if(!mstSet.count(v)) {
+                        pq.push({w, v});
+                    }
+                }
+            }
+        }
+
+        return minCost;
+    }
+
 };
 
 //! ---------------- leetcode problems ---------------------- 
+
 //* number of islands : leetcode 200 (DFS Algo)
 void totalIslands(int i, int j, std :: vector<std :: vector<bool>>& visited, std :: vector<std :: vector<char>>& grid) {
 
@@ -598,6 +635,50 @@ int numberOfIslands(std :: vector<std :: vector<char>>& grid) {
     }
 
     return islands;
+}
+
+//* max area of island (leetcode 695)
+int calc_CrtArea(int i, int j, std :: vector<std :: vector<bool>>& visited, std :: vector<std :: vector<char>>& grid, int& crtArea) {
+
+    int n = grid.size();
+    int m = grid[0].size();
+
+    //^ base case(s)
+    if(i < 0 || j < 0 || i >= n || j >= m || visited[i][j] || grid[i][j] != '1') return crtArea;
+
+    visited[i][j] = true;
+    crtArea++;
+
+    //todo call DFS (recursively) for all 4 neighbours
+    calc_CrtArea(i-1, j, visited, grid, crtArea); //~ top
+    calc_CrtArea(i, j+1, visited, grid, crtArea); //~ right
+    calc_CrtArea(i, j-1, visited, grid, crtArea); //~ left
+    calc_CrtArea(i+1, j, visited, grid, crtArea); //~ bottom
+
+    return crtArea;
+}
+
+int calcMaxArea(std :: vector<std :: vector<char>>& grid) {
+
+    int n = grid.size();
+    int m = grid[0].size();
+
+    std :: vector<std :: vector<bool>> visited(n, std :: vector<bool>(m, false));
+
+    //todo global variable to calc max area
+    int maxArea = 0;
+
+    for(int i=0; i<n; i++) {
+        for(int j=0; j<m; j++) {
+            if(grid[i][j] == '1' && !visited[i][j]) {
+                int initial_area = 0;
+                int crt = calc_CrtArea(i, j, visited, grid, initial_area);
+                maxArea = std :: max(maxArea, crt);
+            }
+        }
+    }
+
+    return maxArea;
 }
 
 //* rotting oranges : leetcode 994 (multi source BFS algorithm)
@@ -798,14 +879,16 @@ std :: vector<std :: vector<int>> floodFill(std :: vector<std :: vector<int>>& i
 
 int main() {
 
-    Graph g({0, 1,2, 3, 8});
+    Graph g({0, 1, 2, 3, 4, 1});
 
-    g.addEdge(0, 1);
     g.addEdge(1, 2);
     g.addEdge(1, 3);
     g.addEdge(2, 3);
     g.addEdge(2, 4);
+    g.addEdge(1, 0);
     g.printAdjList();
+
+    std :: cout << "\n" << g.isEdge(0, 1);
 
     std :: cout << "\n\n";
 
@@ -822,17 +905,17 @@ int main() {
     directed.addEdgeDirected(5, 3);
 
     WieghtedGraph wg({0, 1, 2, 3, 4, 5});
-    wg.addEdgeDirected(0, 1, 2);
-    wg.addEdgeDirected(0, 2, 4);
-    wg.addEdgeDirected(1, 2, 1);
-    wg.addEdgeDirected(1, 3, 7);
-    wg.addEdgeDirected(2, 4, 3);
-    wg.addEdgeDirected(3, 5, 1);
-    wg.addEdgeDirected(4, 3, 2);
-    wg.addEdgeDirected(4, 5, 5);
+    wg.addEdge(0, 1, 2);
+    wg.addEdge(0, 2, 4);
+    wg.addEdge(1, 2, 1);
+    wg.addEdge(1, 3, 7);
+    wg.addEdge(2, 4, 3);
+    wg.addEdge(3, 5, 1);
+    wg.addEdge(4, 3, 2);
+    wg.addEdge(4, 5, 5);
 
     wg.printAdjList();
-    wg.bellmanFordAlgo();
+    std :: cout << wg.primsMST();
 
     return 0;
 }
